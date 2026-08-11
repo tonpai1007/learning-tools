@@ -8,6 +8,7 @@ import lt.ai as ai  # noqa: E402
 from lt import export, generate  # noqa: E402
 from lt.chunker import chunk_sources  # noqa: E402
 from lt.config import cfg  # noqa: E402
+from lt.generate import Concept, Summary  # noqa: E402
 from lt.ingest import list_sources  # noqa: E402
 
 FLASH = [{
@@ -29,6 +30,12 @@ SUMM = {
     "questions_to_test_yourself": ["What is transpiration?"],
     "notebooklm_prompt": "Explain the water cycle like a nature podcast.",
 }
+CONCEPTS = [{
+    "name": "Condensation",
+    "definition": "The process where water vapor cools and forms droplets.",
+    "related_terms": ["clouds", "water cycle"],
+    "confidence": 0.91,
+}]
 
 
 def fake_complete(prompt, system="", temperature=None):
@@ -36,7 +43,35 @@ def fake_complete(prompt, system="", temperature=None):
         return str(FLASH).replace("'", '"')
     if "study summarizer" in system:
         return str(SUMM).replace("'", '"')
+    if "extract core concepts" in system.lower():
+        return str(CONCEPTS).replace("'", '"')
     return str(QUIZ).replace("'", '"')
+
+
+def test_write_vault_bundle(tmp_path):
+    summaries = [Summary(
+        title="Water Cycle",
+        summary="Water moves through repeated stages.",
+        key_points=["Evaporation", "Condensation"],
+        analogy="A loop",
+        questions_to_test_yourself=["What drives evaporation?"],
+        notebooklm_prompt="Explain the cycle.",
+    )]
+    concepts = [Concept(
+        name="Condensation",
+        definition="The process where vapor cools into droplets.",
+        related_terms=["clouds", "water cycle"],
+        confidence=0.91,
+        source="sample_notes.md",
+    )]
+
+    export.write_vault_bundle(summaries, concepts, tmp_path / "vault")
+    summary_file = tmp_path / "vault" / "01_Active_Outputs" / "water_cycle.md"
+    concept_file = tmp_path / "vault" / "03_Concepts" / "condensation.md"
+    assert summary_file.exists()
+    assert concept_file.exists()
+    assert "Condensation" in concept_file.read_text(encoding="utf-8")
+    assert "Water Cycle" in summary_file.read_text(encoding="utf-8")
 
 
 def main():
@@ -53,7 +88,11 @@ def main():
     assert sums, "no summaries"
     export.write_summaries(sums, cfg.output_dir / "summaries.md")
     export.write_notebooklm_pack(sums, cfg.output_dir)
-    print("PIPELINE OK:", len(cards), "cards,", len(qs), "quiz,", len(sums), "summaries")
+    concepts = generate.extract_concepts(chunks, progress=False)
+    assert concepts, "no concepts"
+    assert concepts[0].name == "Condensation"
+    export.write_vault_bundle(sums, concepts, cfg.output_dir / "vault_preview")
+    print("PIPELINE OK:", len(cards), "cards,", len(qs), "quiz,", len(sums), "summaries,", len(concepts), "concepts")
     for f in ("flashcards.tsv", "quiz.html", "summaries.md", "notebooklm_sources/_master_prompt.md"):
         p = cfg.output_dir / f
         assert p.exists() and p.stat().st_size > 0, f

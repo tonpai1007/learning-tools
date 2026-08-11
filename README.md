@@ -1,15 +1,22 @@
 # Learning Tools
 
-A dynamic AI + NotebookLM study pipeline. Drop any material (PDFs, notes, slides-as-text, `.docx`, web pages) into `sources/` and it generates:
+Learning Tools is a local AI study pipeline for turning notes, source material, and research into actionable learning outputs: flashcards, quizzes, summaries, tutor sessions, and structured knowledge exports.
 
-- **Anki flashcards** (TSV, importable)
-- **Practice quizzes** (interactive HTML)
-- **Study summaries** with analogies and self-test questions
-- **NotebookLM pack** — pre-digested sources + prompts for audio overviews
-- **Interactive Socratic tutor** (RAG chat over your material)
-- **Spaced repetition** review with progress tracking (SM-2)
+It is designed to support a simple workflow:
 
-It's subject-agnostic: it works on whatever you feed it.
+1. Drop source material into `sources/`
+2. Generate cards, summaries, and practice content
+3. Keep only the useful outputs in your personal knowledge vault
+4. Let AMADEUS and MySecondBrain consume the curated knowledge, not the noisy runtime folder
+
+## What it produces
+
+- Anki-friendly flashcards in TSV format
+- Quiz pages in HTML format
+- Summary notes with key ideas and self-tests
+- NotebookLM-ready source packs
+- A local, conversational tutor over your material
+- SRS tracking for spaced repetition
 
 ## Setup
 
@@ -21,48 +28,92 @@ Copy-Item .env.example .env
 # edit config.yaml: set ai.model to match your provider
 ```
 
-Provider is any OpenAI-compatible API:
+Supported OpenAI-compatible providers:
 
-| Provider    | OPENAI_API_KEY         | OPENAI_BASE_URL              | ai.model        |
-|-------------|------------------------|------------------------------|-----------------|
-| OpenAI      | your key               | `https://api.openai.com/v1`  | `gpt-4o-mini`   |
-| Ollama (local, free) | *(empty)*      | `http://localhost:11434/v1`  | `llama3.2`      |
-| OpenRouter   | your key               | `https://openrouter.ai/api/v1` | any model    |
+| Provider | OPENAI_API_KEY | OPENAI_BASE_URL | ai.model |
+| --- | --- | --- | --- |
+| OpenAI | your key | `https://api.openai.com/v1` | `gpt-4o-mini` |
+| Ollama | empty | `http://localhost:11434/v1` | `llama3.2` |
+| OpenRouter | your key | `https://openrouter.ai/api/v1` | any model |
 
-## Usage
+## Typical usage
 
 ```powershell
-python -m lt sample                 # create a test file in sources/
-python -m lt all                    # cards + quiz + summaries + NotebookLM pack
-python -m lt cards --add            # flashcards + add to spaced repetition
-python -m lt quiz                   # practice quiz (open output/quiz.html)
-python -m lt summarize              # summaries + output/notebooklm_sources/
-python -m lt tutor                  # chat with your material (Socratic tutor)
-python -m lt review                 # spaced-repetition review session
-python -m lt stats                  # progress table
-python -m lt cards --add path\to\extra.pdf   # also ingest extra files
+python -m lt sample
+python -m lt all
+python -m lt quiz
+python -m lt summarize
+python -m lt tutor
+python -m lt review
+python -m lt stats
 ```
-
-### NotebookLM workflow
-1. Run `python -m lt summarize`.
-2. Drag the files from `output/notebooklm_sources/` into NotebookLM as sources.
-3. Ask it questions, generate an **Audio Overview** (podcast-style MP3), and use `_master_prompt.md` for guidance.
 
 ## Project layout
 
+```text
+learning-tools/
+├─ config.yaml
+├─ requirements.txt
+├─ README.md
+├─ .gitignore
+├─ .env.example
+├─ sources/                 # raw learning material
+├─ output/                  # generated project exports
+├─ data/                    # SRS state and local learning data
+├─ lt/                      # core pipeline code
+├─ tests/                   # validation tests
+├─ sync_to_second_brain.py  # curated sync helper for MySecondBrain
+└─ start.bat
 ```
-sources/     <- drop learning material here
-output/      <- generated flashcards.tsv, quiz.html, summaries.md, notebooklm_sources/
-data/        <- spaced-repetition state (cards.json)
-lt/          <- the pipeline (ingest, chunk, ai, generate, export, tutor, srs, cli)
-config.yaml  <- tune chunk sizes, card counts, tutor behavior
+
+## MySecondBrain sync model
+
+The project should stay as the active working repository. For the vault, use a curated sync strategy instead of copying the whole project tree.
+
+Recommended pattern:
+
+- `output/` → curated summaries, quiz outputs, useful generated packs
+- `sources/` → only selected source notes or useful reference material
+- `notes` or reflection files → personal understanding and synthesis
+- skip runtime noise, caches, logs, temp files, and generated local state
+
+This project includes a simple helper script:
+
+```powershell
+python sync_to_second_brain.py --dry-run
+python sync_to_second_brain.py
 ```
+
+The script syncs only curated, useful outputs into the vault folder at:
+
+`C:\Users\Tonpa\MySecondBrain\learning-tools`
+
+## Vault layout
+
+```text
+MySecondBrain/
+└─ learning-tools/
+   ├─ 00_Source/
+   ├─ 01_Active_Outputs/
+   ├─ 02_Notes/
+   ├─ 03_Concepts/
+   └─ 04_Reference/
+```
+
+This gives a clean split:
+
+- Learning Tools project = active working engine
+- MySecondBrain = memory, synthesis, and long-term knowledge
+- AMADEUS = orchestration and interpretation over the curated vault content
 
 ## Tuning ideas
-- Bigger chunks → more cohesive cards but fewer of them: raise `chunker.chunk_tokens`.
-- More cards per chunk: `python -m lt cards --per-chunk 10`.
-- Weak on something? The tutor (`python -m lt tutor`) will quiz you on it — then feed your answers back as a source.
+
+- Raise `chunker.chunk_tokens` for more cohesive cards
+- Increase card output with `--per-chunk`
+- Use the tutor for weak topics and feed answers back into your learning loop
 
 ## Notes
-- Costs scale with the number of chunks. Use `gpt-4o-mini` (or local Ollama) for daily use.
-- Anki import: File > Import > select `flashcards.tsv`. Tags: `learnforge`.
+
+- Costs scale with chunk count; use a lightweight model for regular study
+- Anki import: File > Import > select `flashcards.tsv`
+- Keep generated output clean and intentional so the vault remains useful rather than noisy

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.env.*
+
+# Test / tooling output
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.qodo/
+.deepeval/
+coverage/
+.coverage
+htmlcov/
+
+# Local runtime / generated data
+output/
+!output/notebooklm_sources/
+!output/*.md
+!output/*.html
+!output/*.tsv
+
+data/
+!data/.gitkeep
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+install.log

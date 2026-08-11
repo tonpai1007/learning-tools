@@ -1,10 +1,11 @@
 """Export study materials: Anki TSV, HTML quiz, markdown summaries, NotebookLM source pack."""
 import html
+import re
 from pathlib import Path
 
 from rich.console import Console
 
-from .generate import Flashcard, QuizQuestion, Summary
+from .generate import Concept, Flashcard, QuizQuestion, Summary
 
 console = Console()
 
@@ -91,3 +92,51 @@ def write_notebooklm_pack(summaries: list[Summary], path: Path) -> None:
         encoding="utf-8",
     )
     console.print(f"[green]NotebookLM pack -> {pack}[/green]")
+
+
+def _slugify(value: str) -> str:
+    value = re.sub(r"[^a-zA-Z0-9\s-]", "", value.lower()).strip()
+    return re.sub(r"\s+", "-", value)
+
+
+def write_vault_bundle(summaries: list[Summary], concepts: list[Concept], root: Path) -> None:
+    """Write a cleaned, vault-friendly bundle under a root folder.
+
+    Structure:
+      root/01_Active_Outputs/summary.md
+      root/03_Concepts/concept.md
+    """
+    root.mkdir(parents=True, exist_ok=True)
+    out_dir = root / "01_Active_Outputs"
+    concept_dir = root / "03_Concepts"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    concept_dir.mkdir(parents=True, exist_ok=True)
+
+    for s in summaries:
+        slug = _slugify(s.title) or "summary"
+        summary_path = out_dir / f"{slug}.md"
+        key_points = "\n".join(f"- {p}" for p in s.key_points)
+        test_qs = "\n".join(f"- {q}" for q in s.questions_to_test_yourself)
+        summary_path.write_text(
+            "# " + s.title + "\n\n"
+            + s.summary + "\n\n"
+            + "## Key points\n" + key_points + "\n\n"
+            + "## Analogy\n" + s.analogy + "\n\n"
+            + "## Test yourself\n" + test_qs + "\n\n"
+            + "## NotebookLM prompt\n" + s.notebooklm_prompt + "\n",
+            encoding="utf-8",
+        )
+
+    for c in concepts:
+        concept_path = concept_dir / f"{_slugify(c.name) or 'concept'}.md"
+        related = "\n".join(f"- {term}" for term in c.related_terms)
+        concept_body = (
+            f"# {c.name}\n\n"
+            f"**Definition:** {c.definition}\n\n"
+            f"**Confidence:** {c.confidence:.2f}\n\n"
+            f"**Related terms:**\n{related or '- none'}\n\n"
+            f"**Source:** {c.source or 'unknown'}\n"
+        )
+        concept_path.write_text(concept_body, encoding="utf-8")
+
+    console.print(f"[green]Vault bundle -> {root}[/green]")
