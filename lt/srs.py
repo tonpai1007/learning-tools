@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.table import Table
 
 from .config import cfg
-from .generate import Flashcard
+from .generate import Concept, Flashcard
 
 console = Console()
 
@@ -59,6 +59,46 @@ class SRS:
             [c for c in self.cards if datetime.fromisoformat(c["due"]) <= now],
             key=lambda c: c["due"],
         )
+
+    def weak_topics(self, concepts: list[Concept]) -> list[dict]:
+        if not concepts:
+            return []
+
+        results: list[dict] = []
+        for concept in concepts:
+            concept_text = concept.name.lower()
+            related = {t.lower() for t in concept.related_terms}
+
+            matches = [
+                card for card in self.cards
+                if concept_text in card["question"].lower()
+                or any(term in card["question"].lower() for term in related)
+            ]
+            if not matches:
+                matches = self.cards
+
+            avg_ease = sum(float(card.get("ease", 2.5)) for card in matches) / max(1, len(matches))
+            avg_lapses = sum(float(card.get("lapses", 0)) for card in matches) / max(1, len(matches))
+            avg_reps = sum(float(card.get("reps", 0)) for card in matches) / max(1, len(matches))
+
+            weak_score = (
+                max(0.0, 1.0 - (concept.confidence or 0.0)) * 0.45
+                + max(0.0, 1.0 - (avg_ease / 3.0)) * 0.30
+                + min(1.0, avg_lapses / 2.0) * 0.15
+                + max(0.0, 1.0 - (avg_reps / 5.0)) * 0.10
+            )
+
+            results.append({
+                "name": concept.name,
+                "source": concept.source,
+                "confidence": float(concept.confidence or 0.0),
+                "weak_score": round(min(1.0, weak_score), 3),
+                "relevant_cards": len(matches),
+                "avg_lapses": round(avg_lapses, 2),
+                "avg_reps": round(avg_reps, 2),
+            })
+
+        return sorted(results, key=lambda item: item["weak_score"], reverse=True)
 
     def grade(self, card: dict, grade: int) -> None:
         s = cfg.spaced()

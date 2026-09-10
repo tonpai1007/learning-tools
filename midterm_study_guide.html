@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Machine Design Midterm Study Guide — Ch 1–3</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; color: #1a1a2e; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 20px 20px; }
+  header h1 { font-size: 2.2em; margin-bottom: 8px; }
+  header p { opacity: 0.85; font-size: 1.1em; }
+  .badge { display: inline-block; background: #e94560; color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.85em; margin: 5px 3px; font-weight: 600; }
+  nav { background: white; padding: 15px 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: sticky; top: 10px; z-index: 100; }
+  nav a { color: #0f3460; text-decoration: none; font-weight: 600; margin-right: 18px; font-size: 0.95em; }
+  nav a:hover { color: #e94560; }
+  section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+  h2 { color: #0f3460; border-bottom: 3px solid #e94560; padding-bottom: 8px; margin-bottom: 20px; font-size: 1.5em; }
+  h3 { color: #16213e; margin: 18px 0 10px; font-size: 1.15em; }
+  h4 { color: #e94560; margin: 14px 0 8px; }
+  table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+  th { background: #0f3460; color: white; padding: 10px; text-align: left; }
+  td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+  tr:nth-child(even) { background: #f8f9fc; }
+  .formula-box { background: #eef4ff; border-left: 4px solid #0f3460; padding: 14px 18px; margin: 12px 0; border-radius: 0 8px 8px 0; overflow-x: auto; }
+  .formula-box strong { color: #0f3460; }
+  .formula { font-size: 1.05em; font-family: 'Cambria Math', Georgia, serif; }
+  .highlight { background: #fff3cd; border: 1px solid #ffc107; padding: 12px 16px; border-radius: 8px; margin: 12px 0; }
+  .tip { background: #d4edda; border: 1px solid #28a745; padding: 12px 16px; border-radius: 8px; margin: 12px 0; }
+  .warning { background: #f8d7da; border: 1px solid #dc3545; padding: 12px 16px; border-radius: 8px; margin: 12px 0; }
+  .exam-focus { background: #ffe8e8; border: 2px solid #e94560; padding: 15px 18px; border-radius: 10px; margin: 15px 0; }
+  .exam-focus h4 { color: #e94560; margin-top: 0; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin: 5px 0; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+  .checklist { background: #f0f7ff; border-radius: 10px; padding: 20px; margin: 15px 0; }
+  .checklist li { list-style: none; padding: 6px 0; }
+  .checklist li::before { content: "☐ "; color: #e94560; font-weight: bold; }
+  .formula-note { font-size: 0.85em; color: #666; margin-top: 4px; }
+  pre { background: #1a1a2e; color: #7ec8e3; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.95em; }
+  code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.95em; }
+  footer { text-align: center; padding: 30px; color: #666; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 Machine Design Midterm — Study Guide</h1>
+  <p>Chapters 1–3: Introduction, Materials, Load & Stress Analysis</p>
+  <div>
+    <span class="badge">Chapter 1: Intro</span>
+    <span class="badge">Chapter 2: Materials</span>
+    <span class="badge">Chapter 3: Load & Stress</span>
+  </div>
+</header>
+
+<div class="container">
+
+<nav>
+  <a href="#ch1">Ch 1: Intro</a>
+  <a href="#ch2">Ch 2: Materials</a>
+  <a href="#ch3-load">Ch 3: Load Analysis</a>
+  <a href="#ch3-vm">V–M Diagrams</a>
+  <a href="#ch3-stress">Stress Analysis</a>
+  <a href="#ch3-mohr">Plane Stress & Mohr</a>
+  <a href="#ch3-shape">Shape Analysis</a>
+  <a href="#ch3-parts">Stress in Machine Parts</a>
+  <a href="#exam-pattern">Exam Focus</a>
+  <a href="#solved">Solved Examples</a>
+  <a href="#practice">Practice Problems</a>
+</nav>
+
+<!-- ===================== CH 1 ===================== -->
+<section id="ch1">
+  <h2>Chapter 1: Introduction to Machine Design</h2>
+
+  <h3>What is Mechanical Design?</h3>
+  <ul>
+    <li><strong>Mechanical design</strong> = the process of designing elements of a machine so they can perform a task efficiently, safely, and reliably.</li>
+    <li>Key design factors: <strong>functionality, strength, safety, cost, manufacturability, reliability, maintainability</strong>.</li>
+  </ul>
+
+  <h3>Design Factor vs. Safety Factor</h3>
+  <table>
+    <tr><th>Term</th><th>Definition</th><th>Symbol</th></tr>
+    <tr>
+      <td><strong>Design Factor (n_d)</strong></td>
+      <td>The planned or target factor chosen by the designer</td>
+      <td>n<sub>d</sub></td>
+    </tr>
+    <tr>
+      <td><strong>Safety Factor (n)</strong></td>
+      <td>The actual factor based on the real loads and material: <br><span class="formula">n = S_allowable / σ_actual</span></td>
+      <td>n</td>
+    </tr>
+  </table>
+
+  <div class="highlight">
+    <strong>⭐ KEY EXAM CONCEPT:</strong> Safety factor should always be <u>greater than or equal to</u> the design factor. A good design has <span class="formula">n ≥ n<sub>d</sub></span>. The safety factor in the past exam answer was "at least 3 times" the design factor.
+  </div>
+
+  <div class="formula-box">
+    <strong>Design Factor:</strong>
+    <div class="formula">n<sub>d</sub> = S<sub>allowable</sub> / S<sub>required</sub></div>
+    <div class="formula-note">S_allowable = maximum usable strength (yield or ultimate depending on failure mode)</div>
+  </div>
+
+  <div class="exam-focus">
+    <h4>📝 Exam Question Type (from answer key)</h4>
+    <p>"Which is better: design factor or safety factor?" — <strong>Safety factor is better</strong> because it's based on the <em>actual</em> applied load (must be ≥ 3× design factor).</p>
+    <p>"Force = 5000 N, area = 10 mm², factor = ?" — Answer: <strong>Force/Area = Safety factor = 5000/10 = 50</strong></p>
+  </div>
+
+  <h3>Load Types</h3>
+  <ul>
+    <li><strong>Static load</strong> — applied slowly, remains constant</li>
+    <li><strong>Dynamic/Impact load</strong> — applied suddenly, changes with time</li>
+    <li><strong>Cyclic/Fatigue load</strong> — repeated fluctuating load</li>
+  </ul>
+</section>
+
+<!-- ===================== CH 2 ===================== -->
+<section id="ch2">
+  <h2>Chapter 2: Materials</h2>
+
+  <h3>2.1 Mechanical Properties of Materials</h3>
+
+  <table>
+    <tr><th>Property</th><th>Definition</th><th>How to Measure</th></tr>
+    <tr><td><strong>Strength (S)</strong></td><td>Ability to withstand large stress before fracture</td><td>Ultimate strength (S<sub>ut</sub>, S<sub>uc</sub>), yield strength (S<sub>y</sub>)</td></tr>
+    <tr><td><strong>Elasticity/Stiffness</strong></td><td>Ability to resist deformation during elastic deformation</td><td>Young's modulus E = σ/ε</td></tr>
+    <tr><td><strong>Ductility</strong></td><td>Ability to deform plastically under <em>tension</em> before breaking</td><td>% Elongation, % reduction in area</td></tr>
+    <tr><td><strong>Malleability</strong></td><td>Ability to deform plastically under <em>compression</em></td><td>Compression test</td></tr>
+    <tr><td><strong>Brittleness</strong></td><td>Very short plastic deformation before breaking (opposite of ductile)</td><td>—</td></tr>
+    <tr><td><strong>Toughness</strong></td><td>Ability to absorb energy before breaking</td><td>Area under stress-strain curve</td></tr>
+    <tr><td><strong>Hardness</strong></td><td>Resistance to penetration by a pointed tool</td><td>Rockwell, Brinell</td></tr>
+    <tr><td><strong>Impact Strength</strong></td><td>Energy to resist impact load (kJ/m²)</td><td>Charpy & Izod tests</td></tr>
+    <tr><td><strong>Hysteresis</strong></td><td>Strain differs when load increases vs. decreases</td><td>Area in the loading-unloading loop</td></tr>
+    <tr><td><strong>Creep</strong></td><td>Permanent deformation under load < yield at high temperature</td><td>Time-deformation graph</td></tr>
+  </table>
+
+  <h3>2.2 Stress & Strain</h3>
+
+  <div class="formula-box">
+    <div class="formula"><strong>Stress:</strong> σ = F / A₀ &nbsp;[Pa or MPa]</div>
+    <div class="formula"><strong>Strain:</strong> ε = (l − l₀) / l₀ &nbsp;[unitless]</div>
+    <div class="formula"><strong>Young's Modulus:</strong> E = σ / ε = slope of elastic region</div>
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ Engineering vs. True Stress:</strong>
+    <ul>
+      <li><strong>Engineering stress</strong>: uses <em>original</em> cross-sectional area A₀ (assumed constant)</li>
+      <li><strong>True stress</strong>: uses the <em>instantaneous</em> (actual) area at that point</li>
+      <li>Since the area shrinks during tension → <strong>true stress > engineering stress</strong></li>
+      <li>True strain (logarithmic): ε = ln(l/l₀) = ∫dl/l</li>
+    </ul>
+  </div>
+
+  <h3>Stress-Strain Diagram — Key Points</h3>
+  <table>
+    <tr><th>Point/Region</th><th>Meaning</th></tr>
+    <tr><td><strong>Proportional limit</strong></td><td>Where σ ∝ ε; slope = Young's modulus E</td></tr>
+    <tr><td><strong>Elastic limit</strong></td><td>Separates elastic and plastic deformation</td></tr>
+    <tr><td><strong>Yield point</strong></td><td>ε increases rapidly but σ does NOT increase</td></tr>
+    <tr><td><strong>Ultimate strength</strong></td><td>Maximum stress on the diagram</td></tr>
+    <tr><td><strong>Fracture point</strong></td><td>Material breaks</td></tr>
+    <tr><td><strong>Offset method (0.2%)</strong></td><td>When yield point is hard to find, draw line parallel to elastic region from ε = 0.002</td></tr>
+  </table>
+
+  <div class="highlight">
+    <strong>⭐ KEY EXAM CONCEPT (from answer key):</strong> Engineering stress assumes the <u>area stays constant</u>; true stress uses the <u>actual area at that point</u>. Also: malleability = deformation under <u>compression</u>; ductility = deformation under <u>tension</u>.
+  </div>
+
+  <h3>2.3 Hardness</h3>
+
+  <table>
+    <tr><th>Method</th><th>How it works</th><th>Formula</th></tr>
+    <tr>
+      <td><strong>Rockwell</strong></td>
+      <td>Indenter with minor force F₀, then major force F₁. Hardness = difference in penetration depths</td>
+      <td>H<sub>R</sub> = E − e</td>
+    </tr>
+    <tr>
+      <td><strong>Brinell</strong></td>
+      <td>Indenting ball with standard force, measure indentation diameter</td>
+      <td>H<sub>B</sub> = 2F / [πD(D − √(D²−d²))]</td>
+    </tr>
+  </table>
+
+  <h4>Brinell ↔ Ultimate Strength Relations</h4>
+  <div class="formula-box">
+    <strong>For steel:</strong><br>
+    <div class="formula">S<sub>u</sub> = 0.5·H<sub>B</sub> [kpsi] &nbsp; or &nbsp; S<sub>u</sub> = 3.4·H<sub>B</sub> [MPa]</div><br>
+    <strong>For cast iron:</strong><br>
+    <div class="formula">S<sub>u</sub> = 0.23·H<sub>B</sub> − 12.5 [kpsi] &nbsp; or &nbsp; S<sub>u</sub> = 1.58·H<sub>B</sub> − 86 [MPa]</div>
+  </div>
+
+  <div class="highlight">
+    <strong>⭐ EXAMPLE (from Chapter 2):</strong><br>
+    1040 hot-rolled steel, target S<sub>u</sub> = 100 kpsi → H<sub>B</sub> = S<sub>u</sub>/0.5 = <strong>200</strong>.<br>
+    Given H<sub>B</sub> = 275 for steel → S<sub>u</sub> = 3.4 × 275 = <strong>935 MPa</strong>.<br>
+    Grey cast iron H<sub>B</sub> = 200 → S<sub>u</sub> = 0.23(200) − 12.5 = <strong>33.5 kpsi</strong> (ASTM No. 35).
+  </div>
+
+  <h3>2.4 Impact Strength</h3>
+  <ul>
+    <li><strong>Impact load</strong> = load applied in time < 1/3 of the lowest natural period of vibration</li>
+    <li>Measured by <strong>Charpy test</strong> (specimen horizontal, notch struck from back) or <strong>Izod test</strong> (specimen vertical, struck at upper tip)</li>
+    <li><strong>Critical temperature</strong>: temperature where material transitions from ductile → brittle (brittle-ductile transition)</li>
+    <li>Strain rate ↑ → strength ↑ (yield increases faster than ultimate)</li>
+  </ul>
+
+  <h3>2.5 Metal Forming</h3>
+
+  <table>
+    <tr><th></th><th>Hot Working</th><th>Cold Working</th></tr>
+    <tr>
+      <td><strong>Definition</strong></td>
+      <td>Forming above re-crystalline temperature</td>
+      <td>Forming at low temp (typically room temp)</td>
+    </tr>
+    <tr>
+      <td><strong>Processes</strong></td>
+      <td>Rolling, extrusion, forging</td>
+      <td>Rolling, drawing, extrusion, turning, grinding, polishing</td>
+    </tr>
+    <tr>
+      <td><strong>Grain size</strong></td>
+      <td>Changed (refined) → strength↑, ductility↑</td>
+      <td>Not changed but distorted</td>
+    </tr>
+    <tr>
+      <td><strong>Yield strength</strong></td>
+      <td>—</td>
+      <td>↑</td>
+    </tr>
+    <tr>
+      <td><strong>Ultimate strength</strong></td>
+      <td>—</td>
+      <td>↑</td>
+    </tr>
+    <tr>
+      <td><strong>Hardness</strong></td>
+      <td>—</td>
+      <td>↑</td>
+    </tr>
+    <tr>
+      <td><strong>Ductility</strong></td>
+      <td>↑</td>
+      <td>↓ (strain hardening)</td>
+    </tr>
+  </table>
+
+  <div class="tip">
+    <strong>💡 Strain Hardening:</strong> When a cold-worked metal is loaded beyond yield, unloaded, then reloaded — the new elastic line is nearly parallel to the original but shifted. Yield strength increases, ductility decreases. Repeated cycles → more brittle → eventually breaks.
+  </div>
+
+  <h3>2.6 Heat Treatment of Steel</h3>
+
+  <table>
+    <tr><th>Process</th><th>Method</th><th>Effects</th></tr>
+    <tr>
+      <td><strong>Annealing</strong></td>
+      <td>Heat above critical temp, cool slowly in furnace</td>
+      <td>Ductility ↑, strength ↑, residual stress released</td>
+    </tr>
+    <tr>
+      <td><strong>Normalising</strong></td>
+      <td>Heat above critical temp, cool in atmosphere</td>
+      <td>Ductility ↑, strength ↑, finer grain than annealing</td>
+    </tr>
+    <tr>
+      <td><strong>Quenching</strong></td>
+      <td>Heat above critical temp, cool rapidly in water/oil/air</td>
+      <td>Hardness ↑, brittleness ↑, wear & vibration resistance ↑</td>
+    </tr>
+    <tr>
+      <td><strong>Tempering</strong></td>
+      <td>Reheat below critical temp after quenching</td>
+      <td>Hardness ↓, brittleness ↓ (residual stress released)</td>
+    </tr>
+    <tr>
+      <td><strong>Case Hardening</strong></td>
+      <td>Increase carbon at surface, then quench & temper</td>
+      <td>Outer surface hardness ↑, core ductility & toughness unchanged</td>
+    </tr>
+  </table>
+
+  <h3>2.7 Ferrous Metals (by Carbon Content)</h3>
+
+  <table>
+    <tr><th>Property</th><th>Wrought Iron</th><th>Steel</th><th>Cast Iron</th></tr>
+    <tr><td><strong>Carbon content</strong></td><td>Very low (>0.1%)</td><td>Medium (<2.1%)</td><td>High (>2.1%)</td></tr>
+    <tr><td><strong>Melting point</strong></td><td>Highest (1500°C)</td><td>Middle (1300–1400°C)</td><td>Lowest (1200°C)</td></tr>
+    <tr><td><strong>Hardness</strong></td><td>Can't be hardened by heat (only strain)</td><td>Can be hardened & tempered</td><td>Hardest</td></tr>
+    <tr><td><strong>Compressive strength</strong></td><td>Low (2 T/cm²)</td><td>High (4.75–25.2 T/cm²)</td><td>High (6.3–7.1 T/cm²)</td></tr>
+    <tr><td><strong>Tensile strength</strong></td><td>High (3.2 T/cm²)</td><td>High (5.5–11 T/cm²)</td><td>Low (1.3–1.6 T/cm²)</td></tr>
+    <tr><td><strong>Ductility</strong></td><td>Malleable, ductile</td><td>Tough, malleable, ductile</td><td>Brittle, cannot be welded</td></tr>
+    <tr><td><strong>Rusting</strong></td><td>Resist rust</td><td>Easy</td><td>Difficult</td></tr>
+    <tr><td><strong>Shock reaction</strong></td><td>Cannot stand heavy shock</td><td>Absorbs shocks</td><td>Does not absorb shocks</td></tr>
+  </table>
+
+  <h4>Types of Cast Iron</h4>
+  <table>
+    <tr><th>Type</th><th>Carbon form</th><th>Key Properties</th></tr>
+    <tr><td><strong>Grey cast iron</strong></td><td>Graphite</td><td>Mostly used; cheap, machinable, absorbs vibration; brittle in tension, no welding</td></tr>
+    <tr><td><strong>White cast iron</strong></td><td>Cementite + pearlite</td><td>Very wear resistant; very brittle, hard to machine (needs annealing)</td></tr>
+    <tr><td><strong>Malleable cast iron</strong></td><td>Nodular graphite (from annealing white iron)</td><td>Good tensile strength & elongation, soft, easy machining; long anneal (50–150 hr), expensive</td></tr>
+    <tr><td><strong>Ductile/Nodular cast iron</strong></td><td>Graphite (add MgFeSi)</td><td>Malleable, high Young's modulus, obeys Hooke's law (grey doesn't)</td></tr>
+  </table>
+
+  <h3>2.8 Alloy Steel Elements</h3>
+  <table>
+    <tr><th>Element</th><th>Effect</th></tr>
+    <tr><td><strong>Nickel (Ni)</strong></td><td>More strength without losing ductility; case-hardening core; with Cr → toughness + hardness</td></tr>
+    <tr><td><strong>Manganese (Mn)</strong></td><td>Deoxidising/desulfurising; enables oil quenching</td></tr>
+    <tr><td><strong>Silicon (Si)</strong></td><td>Deoxidising agent; low hysteresis loss, high magnetic permeability</td></tr>
+    <tr><td><strong>Molybdenum (Mo)</strong></td><td>Hardness + toughness via fine grain; oil/air hardening; greatest hardening after carbon</td></tr>
+    <tr><td><strong>Vanadium (V)</strong></td><td>Hardness + toughness; hardened at higher temp; tool steels</td></tr>
+    <tr><td><strong>Tungsten (W)</strong></td><td>Hardness + toughness; tool steels — stays hard at high heat</td></tr>
+    <tr><td><strong>Chromium (Cr)</strong></td><td>Ductility, hardness, toughness; >12% = stainless steel (corrosion resistant); >18% too hard to weld</td></tr>
+  </table>
+
+  <h3>2.9 Non-Ferrous Metals</h3>
+
+  <table>
+    <tr><th>Metal</th><th>Advantages</th><th>Disadvantages</th></tr>
+    <tr>
+      <td><strong>Aluminium</strong></td>
+      <td>Great strength-to-weight, corrosion resistant (oxide coating), high thermal & electrical conductivity, low melting point</td>
+      <td>Lower tensile strength than steel, 1/3 stiffness of steel, difficult to solder/braze/weld</td>
+    </tr>
+    <tr>
+      <td><strong>Magnesium</strong></td>
+      <td>Lightest commercial metal (¼ weight of steel)</td>
+      <td>No great strength; not good >100°C; cold working reduces Young's modulus</td>
+    </tr>
+    <tr>
+      <td><strong>Titanium</strong></td>
+      <td>As strong as steel but ½ weight; corrosion resistant; nonmagnetic; high-temp strength</td>
+      <td>Expensive, difficult machinability, low thermal conductivity</td>
+    </tr>
+    <tr>
+      <td><strong>Copper</strong></td>
+      <td>Usually as alloys: <strong>Brass</strong> (Cu + Zn), <strong>Bronze</strong> (Cu + Si/P/Al/Be)</td>
+      <td>—</td>
+    </tr>
+  </table>
+
+  <h4>Brass types (Cu + Zn)</h4>
+  <ul>
+    <li><strong>Low zinc (5–15%)</strong>: easy cold work, ductile, corrosion resistant, hard to machine
+      <ul>
+        <li>Gilding brass (5% Zn) — jewelry</li>
+        <li>Commercial bronze (10% Zn)</li>
+        <li>Red brass (15% Zn) — tubing, radiators</li>
+      </ul>
+    </li>
+    <li><strong>Medium zinc (20–36%)</strong>: cheaper, better machinability
+      <ul>
+        <li>Cartridge brass (30% Zn) — best ductility+strength combo</li>
+        <li>Yellow brass (35% Zn) — many fabrication options</li>
+        <li>Admiralty metal (28% Zn + 1% Sn) — saltwater corrosion resistance</li>
+      </ul>
+    </li>
+    <li><strong>High zinc (36–40%)</strong>: less ductile, hot work only
+      <ul>
+        <li>Muntz metal (40% Zn) — cheap</li>
+        <li>Naval brass (40% Zn + 0.75% Sn) — better corrosion resistance</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h4>Bronze types (Cu + other)</h4>
+  <ul>
+    <li><strong>Phosphor bronze</strong>: fatigue/corrosion/wear resistant, good for springs</li>
+    <li><strong>Beryllium bronze</strong>: very corrosion resistant, high strength, expensive</li>
+    <li><strong>Aluminium bronze</strong>: better strength & corrosion than brass</li>
+    <li><strong>Silicon bronze</strong>: similar properties to mild steel, easy to work</li>
+  </ul>
+
+  <h3>2.10 Ceramics</h3>
+  <ul>
+    <li>Inorganic compounds of metal + non-metal; covalent + ionic bonds (stronger than metallic)</li>
+    <li>→ hardness ↑, stiffness ↑, ductility ↓, melting point ↑</li>
+    <li>No free electrons → not electrically/thermally conductive</li>
+    <li><strong>3 categories</strong>:
+      <ul>
+        <li><strong>Traditional</strong>: natural silicates (clay), silica (SiO₂), alumina (Al₂O₃), SiC</li>
+        <li><strong>New</strong>: oxide ceramics, carbides (SiC, WC, TiC), nitrides (Si₃N₄, BN, TiN)</li>
+        <li><strong>Glasses</strong>: silica-based (50–75% SiO₂); additives: MgO, CaO, Na₂O, PbO, B₂O₃</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>2.11 Polymers</h3>
+  <table>
+    <tr><th>Type</th><th>Definition</th><th>Examples</th></tr>
+    <tr>
+      <td><strong>Thermoplastic</strong></td>
+      <td>Can be melted & remolded when heated; recyclable (no molecular change)</td>
+      <td>PE, PP, PC, PET, PS, PVC, ABS, TEFLON, nylon, acrylic, polyurethane</td>
+    </tr>
+    <tr>
+      <td><strong>Thermoset</strong></td>
+      <td>Cannot be remolded after polymerisation; strong molecular bonds; burns if reheated</td>
+      <td>Phenolic, urea, melamine, epoxy, polyester</td>
+    </tr>
+  </table>
+
+  <div class="warning">
+    <strong>⚠️ All plastics are polymers, but NOT all polymers are plastics.</strong> (Elastomers/rubbers and natural polymers like DNA/cellulose are polymers but not plastics.)
+  </div>
+
+  <h3>2.12 Composite Materials</h3>
+  <ul>
+    <li>Formed from two+ dissimilar materials: <strong>Filler</strong> (discontinuous reinforcement, stiff & strong) + <strong>Matrix</strong> (holds filler, transfers load, usually plastic resin)</li>
+    <li>Properties vary by direction → need multiple plies</li>
+    <li>Up to 5× strength-to-weight of steel, 8× stiffness-to-weight of metals</li>
+    <li>Used in automotive, marine, aircraft, spacecraft</li>
+  </ul>
+
+  <h3>2.13 Material Selection Process</h3>
+  <div class="formula-box">
+    <strong>3 Steps:</strong><br>
+    1. List & prioritise all <u>required properties</u><br>
+    2. For each property, list & prioritise all <u>available materials</u><br>
+    3. Select material which <u>appears in all property lists</u>
+  </div>
+  <p>Property diagrams: Young's modulus chart, Density–E chart, Density–Strength chart.</p>
+</section>
+
+<!-- ===================== CH 3 ===================== -->
+<section id="ch3-load">
+  <h2>Chapter 3: Load Analysis</h2>
+
+  <h3>3.1 Equilibrium</h3>
+  <div class="formula-box">
+    <strong>2-D Equilibrium (3 equations):</strong>
+    <div class="formula">ΣF<sub>x</sub> = 0 &nbsp; ΣF<sub>y</sub> = 0 &nbsp; ΣM = 0</div><br>
+    <strong>3-D Equilibrium (6 equations):</strong>
+    <div class="formula">ΣF<sub>x</sub> = ΣF<sub>y</sub> = ΣF<sub>z</sub> = 0 &nbsp; ΣM<sub>x</sub> = ΣM<sub>y</sub> = ΣM<sub>z</sub> = 0</div>
+  </div>
+
+  <h3>3.2 Free-Body Diagram (FBD)</h3>
+  <table>
+    <tr><th>Support Type</th><th>Reactions</th></tr>
+    <tr><td>Roller support</td><td>1 upward normal force N</td></tr>
+    <tr><td>Free sliding guide</td><td>1 vertical normal force (up or down)</td></tr>
+    <tr><td>Pin connection</td><td>Vertical force + Horizontal force</td></tr>
+    <tr><td>Fixed / Cantilever</td><td>Vertical + Horizontal + Moment</td></tr>
+    <tr><td>Simple support</td><td>1 pin + 1 roller</td></tr>
+    <tr><td>Weight (W = mg)</td><td>Downward</td></tr>
+    <tr><td>Cable/Rope/Belt</td><td>Tension away from body</td></tr>
+    <tr><td>Smooth surface</td><td>Upward normal force</td></tr>
+    <tr><td>Rough surface</td><td>Upward normal N + friction f = μN</td></tr>
+  </table>
+
+  <h3>3.3 Internal Loads in a Beam</h3>
+  <ul>
+    <li>3 types of internal loads: <strong>Shear force (V)</strong>, <strong>Bending moment (M)</strong>, <strong>Torsional moment (T)</strong></li>
+    <li>Sign conventions:
+      <ul>
+        <li>Right-end of cut: +V downward, +M counter-clockwise (beam bends upward)</li>
+        <li>Left-end of cut: +V upward, +M clockwise</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>3.4 Relations between Load, Shear & Moment</h3>
+  <div class="formula-box">
+    <div class="formula">w = −dV/dx &nbsp;(slope of V = −load)</div>
+    <div class="formula">V = dM/dx &nbsp;(slope of M = V)</div>
+    <div class="formula">V = ∫w dx &nbsp;→ V = Area under load diagram</div>
+    <div class="formula">M = ∫V dx &nbsp;→ M = Area under shear diagram</div>
+  </div>
+</section>
+
+<!-- ===================== V-M DIAGRAMS ===================== -->
+<section id="ch3-vm">
+  <h2>V–M Diagrams — Two Methods</h2>
+
+  <h3>Method 1: Static Analysis</h3>
+  <ol>
+    <li>Draw FBD</li>
+    <li>Find all external forces (ΣF=0, ΣM=0)</li>
+    <li>Virtually cut the beam at each section where loads change</li>
+    <li>Draw FBD of the cut section with V and M in positive directions</li>
+    <li>Apply equilibrium to find V and M as functions of x</li>
+    <li>Draw V–M diagrams</li>
+  </ol>
+
+  <div class="tip">
+    <strong>💡 Worked example (simplified):</strong><br>
+    Beam with point loads: R<sub>A</sub> = 1 kN, R<sub>B</sub> = 5 kN<br>
+    AB section: V = 1 kN, M = x kN·m<br>
+    BC section: V = −3 kN, M = −3x + 8 kN·m<br>
+    CD section: V = 2 kN, M = −2x kN·m
+  </div>
+
+  <h3>Method 2: Singularity Functions</h3>
+
+  <table>
+    <tr><th>Load</th><th>Symbol</th><th>Value (x < a, x > a)</th><th>Integration</th></tr>
+    <tr>
+      <td>Concentrated moment</td>
+      <td>⟨x−a⟩<sup>−2</sup></td>
+      <td>0, 0</td>
+      <td>⟨x−a⟩<sup>−1</sup></td>
+    </tr>
+    <tr>
+      <td>Concentrated force</td>
+      <td>⟨x−a⟩<sup>−1</sup></td>
+      <td>0, 0</td>
+      <td>⟨x−a⟩<sup>0</sup></td>
+    </tr>
+    <tr>
+      <td>Uniform force distribution</td>
+      <td>⟨x−a⟩<sup>0</sup></td>
+      <td>0, 1</td>
+      <td>⟨x−a⟩<sup>1</sup></td>
+    </tr>
+    <tr>
+      <td>Ramp force distribution</td>
+      <td>⟨x−a⟩<sup>1</sup></td>
+      <td>0, (x−a)</td>
+      <td>⟨x−a⟩<sup>2</sup>/2</td>
+    </tr>
+  </table>
+
+  <div class="formula-box">
+    <strong>Steps:</strong><br>
+    1. Draw FBD, find external reactions<br>
+    <span style="font-size: 0.85em">ΣM=0, ΣF=0</span><br><br>
+    2. Write load equation w(x) using singularity brackets:<br>
+    <span class="formula">w = R<sub>A</sub>⟨x−0⟩<sup>−1</sup> − F<sub>1</sub>⟨x−a⟩<sup>−1</sup> + F<sub>2</sub>⟨x−b⟩<sup>−1</sup> − R<sub>B</sub>⟨x−L⟩<sup>−1</sup></span><br><br>
+    3. Integrate to get V:&nbsp; <span class="formula">V = ∫w dx</span><br><br>
+    4. Integrate to get M:&nbsp; <span class="formula">M = ∫V dx</span><br><br>
+    5. Evaluate V & M for each section (using the "Value" column)<br>
+    6. Draw V–M diagrams
+  </div>
+
+  <div class="exam-focus">
+    <h4>📝 Past Exam Format (Problem 1 from answer key)</h4>
+    <p>Beam with: R<sub>A</sub>, R<sub>B</sub> supports, point load F=3 kN, distributed load w=1.5 kN/m. Position: A (0), B (2m), C (6m)</p>
+    <p>Step 1: FBD → ΣM<sub>C</sub>=0: (3×1.5)+(F<sub>A</sub>×6)−M<sub>A</sub>=3 → F<sub>A</sub>=2 kN, M<sub>A</sub>=21 kN·m</p>
+    <p>Step 2: Singularity function for w:</p>
+    <pre>w = 2⟨x−0⟩⁻¹ + 1.5⟨x−0⟩⁰ − 1.5⟨x−2⟩⁰ − 5⟨x−6⟩⁻¹</pre>
+    <p>Step 3: V = ∫w dx:</p>
+    <pre>V = 2⟨x−0⟩⁰ + 1.5⟨x−0⟩¹ − 1.5⟨x−2⟩¹ − 5⟨x−6⟩⁰</pre>
+    <p>Step 4: M = ∫V dx:</p>
+    <pre>M = 2⟨x−0⟩¹ + 1.5⟨x−0⟩²/2 − 1.5⟨x−2⟩²/2 − 5⟨x−6⟩¹</pre>
+    <p>Evaluation:</p>
+    <ul>
+      <li>0≤x<2: V = 2 + 1.5x &nbsp;|&nbsp; M = 2x + 0.75x²</li>
+      <li>2≤x≤6: V = 2 + 1.5x − 1.5(x−2) − 5 = 10 (check at x=6: V=10)</li>
+      <li>Max moment computed from the section formulas</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== STRESS ANALYSIS ===================== -->
+<section id="ch3-stress">
+  <h2>Stress Analysis</h2>
+
+  <h3>3.5 Stress Components</h3>
+  <ul>
+    <li><strong>Normal stress (σ)</strong> — perpendicular to the surface plane (tension +, compression −)</li>
+    <li><strong>Shear stress (τ)</strong> — parallel to the surface plane</li>
+    <li>In 3-D: 9 components → under equilibrium, cross-shears are equal: τ<sub>xy</sub>=τ<sub>yx</sub>, τ<sub>xz</sub>=τ<sub>zx</sub>, τ<sub>yz</sub>=τ<sub>zy</sub> → <strong>6 independent components</strong></li>
+    <li><strong>Plane stress</strong> (2-D): σ<sub>z</sub> = τ<sub>xz</sub> = τ<sub>yz</sub> = 0 → only σ<sub>x</sub>, σ<sub>y</sub>, τ<sub>xy</sub></li>
+  </ul>
+
+  <h3>3.6 Plane Stress Transformation Equations</h3>
+
+  <div class="formula-box">
+    <strong>Normal stress on a plane at angle φ:</strong>
+    <div class="formula">σ = (σ<sub>x</sub>+σ<sub>y</sub>)/2 + (σ<sub>x</sub>−σ<sub>y</sub>)/2 · cos 2φ + τ<sub>xy</sub> · sin 2φ</div><br>
+    <strong>Shear stress on a plane at angle φ:</strong>
+    <div class="formula">τ = −(σ<sub>x</sub>−σ<sub>y</sub>)/2 · sin 2φ + τ<sub>xy</sub> · cos 2φ</div>
+  </div>
+
+  <h4>Principal Normal Stresses (max & min σ)</h4>
+  <div class="formula-box">
+    <strong>Direction:</strong>
+    <div class="formula">tan 2φ<sub>p</sub> = 2τ<sub>xy</sub> / (σ<sub>x</sub> − σ<sub>y</sub>)</div><br>
+    <strong>Magnitude:</strong>
+    <div class="formula">σ₁, σ₂ = (σ<sub>x</sub>+σ<sub>y</sub>)/2 ± √[((σ<sub>x</sub>−σ<sub>y</sub>)/2)² + τ<sub>xy</sub>²]</div>
+    <div class="formula-note">On the principal normal stress planes, τ = 0</div>
+  </div>
+
+  <h4>Principal Shear Stresses (max & min τ)</h4>
+  <div class="formula-box">
+    <strong>Direction:</strong>
+    <div class="formula">tan 2φ<sub>s</sub> = −(σ<sub>x</sub>−σ<sub>y</sub>) / (2τ<sub>xy</sub>)</div><br>
+    <strong>Magnitude:</strong>
+    <div class="formula">τ₁, τ₂ = ± √[((σ<sub>x</sub>−σ<sub>y</sub>)/2)² + τ<sub>xy</sub>²]</div>
+    <div class="formula-note">On the principal shear planes, σ = (σ<sub>x</sub>+σ<sub>y</sub>)/2 (average normal stress)</div>
+  </div>
+
+  <h3>3.7 Mohr's Circle</h3>
+  <ol>
+    <li>Center: C = (σ<sub>x</sub>+σ<sub>y</sub>)/2 on σ-axis</li>
+    <li>Radius: R = √[((σ<sub>x</sub>−σ<sub>y</sub>)/2)² + τ<sub>xy</sub>²]</li>
+    <li>Plot point X (σ<sub>x</sub>, τ<sub>xy</sub>) and Y (σ<sub>y</sub>, −τ<sub>xy</sub>)</li>
+    <li>σ₁ = C + R (rightmost point), σ₂ = C − R (leftmost point)</li>
+    <li>τ<sub>max</sub> = R (top of circle)</li>
+    <li>Angle 2φ<sub>p</sub> measured from point X to σ₁</li>
+  </ol>
+
+  <div class="highlight">
+    <strong>⭐ EXAMS LOVE:</strong> Finding principal stresses at critical point of a shaft under combined bending + torsion:
+    <div class="formula">σ = 32M/(πd³) &nbsp;(bending)</div>
+    <div class="formula">τ = 16T/(πd³) &nbsp;(torsion)</div>
+    <div class="formula">σ₁,₂ = σ/2 ± √[(σ/2)² + τ²]</div>
+    <div class="formula">τ_max = √[(σ/2)² + τ²]</div>
+  </div>
+
+  <h3>3.8 Strain & Poisson's Ratio</h3>
+  <div class="formula-box">
+    <strong>Normal strain:</strong> ε = δ/l (extension +, compression −)<br>
+    <strong>Shear strain:</strong> γ = δ/h (angular)<br>
+    <strong>Poisson's ratio:</strong> ν = ε<sub>lateral</sub> / ε<sub>axial</sub> &nbsp;(0 ≤ ν ≤ 0.5; metals ≈ 0.3)<br>
+    <strong>Shear modulus:</strong> G = E / [2(1+ν)]<br>
+    <strong>Elastic modulus (bulk):</strong> K = E / [3(1−2ν)]
+  </div>
+</section>
+
+<!-- ===================== SHAPE ANALYSIS ===================== -->
+<section id="ch3-shape">
+  <h2>Shape Analysis — Second Area Moment of Inertia</h2>
+
+  <h3>Common Shapes</h3>
+  <table>
+    <tr><th>Shape</th><th>Area (A)</th><th>Centroid (y)</th><th>Moment of Inertia (I)</th></tr>
+    <tr>
+      <td>Rectangle (b×h)</td>
+      <td>bh</td>
+      <td>h/2 from base</td>
+      <td>I = bh³/12 (about centroid)</td>
+    </tr>
+    <tr>
+      <td>Circle (diameter d)</td>
+      <td>πd²/4</td>
+      <td>d/2</td>
+      <td>I = πd⁴/64</td>
+    </tr>
+    <tr>
+      <td><strong>Solid circular shaft</strong></td>
+      <td>πd²/4</td>
+      <td>d/2</td>
+      <td>I = πd⁴/64, J = πd⁴/32</td>
+    </tr>
+    <tr>
+      <td><strong>Hollow shaft</strong></td>
+      <td>π(dₒ²−dᵢ²)/4</td>
+      <td>dₒ/2</td>
+      <td>J = π(dₒ⁴−dᵢ⁴)/32</td>
+    </tr>
+  </table>
+
+  <h3>Parallel Axis Theorem</h3>
+  <div class="formula-box">
+    <div class="formula">I = I<sub>c</sub> + A·d²</div>
+    <div class="formula-note">I_c = moment of inertia about centroid axis; d = distance from centroid axis to new axis</div>
+  </div>
+
+  <h3>Composite Shape — Finding Centroid</h3>
+  <div class="formula-box">
+    <div class="formula">ȳ = Σ(Aᵢ·yᵢ) / ΣAᵢ</div>
+    <div class="formula-note">Divide the shape into simple rectangles, find each area and its centroid, combine.</div>
+  </div>
+
+  <div class="exam-focus">
+    <h4>📝 Past Exam (Problem 2 from answer key)</h4>
+    <p>Composite T-beam cross-section:</p>
+    <ul>
+      <li>A<sub>total</sub> = (16×12) − (4×8) = 192 − 32 = 120 cm²</li>
+      <li>Centroid: c<sub>1</sub> = +0.3 cm, c<sub>2</sub> = −1.1 cm (measured from neutral axis)</li>
+      <li>Step: Find neutral axis (centroid), then I around NA, then σ = −Mc/I</li>
+      <li><strong>Normal stress at point A:</strong> σ<sub>A</sub> = −(M·c)/I = −2.36 MPa (Compression)</li>
+      <li><strong>Shear stress at point B:</strong> τ = VQ/(Ib) = 131.65 MPa</li>
+    </ul>
+  </div>
+
+  <h3>3.9 Bending Stress in Beams</h3>
+  <div class="formula-box">
+    <div class="formula"><strong>Normal (bending) stress:</strong> σ = −M·c / I</div>
+    <div class="formula-note">M = bending moment, c = distance from neutral axis, I = second moment of inertia</div>
+    <div class="formula"><strong>Max bending stress (solid round shaft):</strong> σ = 32M / (πd³)</div><br>
+    <div class="formula"><strong>Shear stress in beams:</strong> τ = V·Q / (I·b)</div>
+    <div class="formula-note">V = shear force, Q = first moment of area above the point = A′·ȳ′, b = width at the point, I = moment of inertia</div>
+  </div>
+
+  <div class="tip">
+    <strong>💡 For a rectangular cross-section:</strong> τ<sub>max</sub> = 1.5·V/A (at neutral axis, parabolic distribution).
+  </div>
+</section>
+
+<!-- ===================== STRESS IN MACHINE PARTS ===================== -->
+<section id="ch3-parts">
+  <h2>Stress Analysis in Mechanical Parts Under Loads</h2>
+
+  <h3>3.10 Torsion of Circular Shafts</h3>
+  <div class="formula-box">
+    <div class="formula"><strong>Torsional shear stress:</strong> τ = T·c / J = 16T / (πd³) (solid shaft)</div>
+    <div class="formula"><strong>Polar moment of inertia:</strong></div>
+    <div class="formula">Solid: J = πd⁴/32 &nbsp;|&nbsp; Hollow: J = π(dₒ⁴ − dᵢ⁴)/32</div>
+    <div class="formula"><strong>Note:</strong> J = 2I for circular cross-sections</div>
+  </div>
+
+  <h3>3.11 Combined Loading — Shaft with Torsion + Bending</h3>
+
+  <div class="warning">
+    <strong>⚠️ THIS IS A PAST EXAM PROBLEM TYPE — MASTER THE 6-STEP METHOD</strong>
+  </div>
+
+  <h4>The 6-Step Method (memorize this order)</h4>
+  <ol>
+    <li><strong>Torque equilibrium</strong> → find belt tensions (Torque = Force × Radius)</li>
+    <li><strong>FBD + equilibrium</strong> → find bearing reactions (ΣM=0, ΣF=0)</li>
+    <li><strong>V–M diagram</strong> → find M<sub>max</sub> (critical value)</li>
+    <li><strong>Bending stress:</strong> σ = 32M/(πd³)</li>
+    <li><strong>Torsional shear:</strong> τ = 16T/(πd³)</li>
+    <li><strong>Principal stresses:</strong> σ₁,₂ = σ/2 ± √[(σ/2)² + τ²] and τ<sub>max</sub> = √[(σ/2)² + τ²]</li>
+  </ol>
+
+  <div class="exam-focus">
+    <h4>📝 Worked Example 1: Shaft with two V-belt pulleys (Ch 3)</h4>
+    <p>Tensions at pulley A: T₁ = 500 lbf, T₂ = 75 lbf on 4-in radius. At pulley B, loose side T₂ᵦ = 15% of tight side T₁ᵦ on 5-in radius.</p>
+    <ol>
+      <li><strong>Torque equilibrium:</strong> (500×4) − (75×4) − (T₂×5) + (T₁×5) = 0, T₁ = 0.15T₂ → <strong>T₂ = 400 lbf, T₁ = 60 lbf</strong></li>
+      <li><strong>Reactions:</strong> ΣM_O = 0 → R_C = 178.25 lbf; R_O = 293.25 lbf</li>
+      <li><strong>V–M diagram:</strong> M<sub>max</sub> = 2932.5 lbf·in</li>
+      <li><strong>Bending stress:</strong> σ = 32M/(πd³)</li>
+      <li><strong>Torsional shear:</strong> τ = 16T/(πd³)</li>
+      <li><strong>Principal stresses:</strong> σ₁,₂ = σ/2 ± √[(σ/2)² + τ²]</li>
+    </ol>
+  </div>
+
+  <div class="exam-focus">
+    <h4>📝 Worked Example 2: Full numerical solution (d = 50 mm)</h4>
+    <p><strong>Given:</strong> Shaft d = 50 mm, M<sub>max</sub> = 1000 N·m, T = 600 N·m</p>
+    <p><strong>Step 4 — Bending stress:</strong></p>
+    <div class="formula-box">
+      <div class="formula">σ = 32M/(πd³) = 32(1000×10³)/(π × 50³)</div>
+      <div class="formula">σ = 32,000,000 / 392,699 = <strong>81.5 MPa</strong></div>
+    </div>
+    <p><strong>Step 5 — Torsional shear:</strong></p>
+    <div class="formula-box">
+      <div class="formula">τ = 16T/(πd³) = 16(600×10³)/(π × 50³)</div>
+      <div class="formula">τ = 9,600,000 / 392,699 = <strong>24.4 MPa</strong></div>
+    </div>
+    <p><strong>Step 6 — Principal stresses:</strong></p>
+    <div class="formula-box">
+      <div class="formula">σ₁,₂ = σ/2 ± √[(σ/2)² + τ²] = 81.5/2 ± √[(81.5/2)² + 24.4²]</div>
+      <div class="formula">= 40.75 ± √(1660.6 + 595.4) = 40.75 ± √2256 = 40.75 ± 47.5</div>
+      <div class="formula"><strong>σ₁ = 88.2 MPa</strong> (max normal), <strong>σ₂ = −6.75 MPa</strong> (min normal)</div>
+      <div class="formula"><strong>τ<sub>max</sub> = 47.5 MPa</strong></div>
+    </div>
+  </div>
+
+  <div class="exam-focus">
+    <h4>📝 Past Exam Problem 3 pattern (from answer key)</h4>
+    <p>Shaft d = 50 mm (r = 25 mm), handle force 200 N at 0.3 m, belt tension T at 0.15 m radius.</p>
+    <ol>
+      <li><strong>Torque:</strong> (200)(0.3) = (T)(0.15) → <strong>T = 400 N</strong></li>
+      <li><strong>Reactions:</strong> ΣM about A → R_A = 20 N, R_D = 100 N</li>
+      <li><strong>Singularity functions</strong> for w, V, M (with belt tensions F_B, F_C)</li>
+      <li><strong>M<sub>max</sub></strong> from V–M diagram</li>
+      <li><strong>τ<sub>max</sub></strong> = 16T/(πd³) = 16(60)/(π×0.05³) = <strong>11,317.68 Pa</strong></li>
+    </ol>
+  </div>
+
+  <div class="tip">
+    <strong>💡 KEY INSIGHT:</strong> For a solid round shaft, J = 2I. So τ = Tc/J = 16T/πd³ and σ = Mc/I = 32M/πd³. The factor of 2 difference comes from J = 2I. Always convert M and T to consistent units (N·mm or N·m) before plugging in.
+  </div>
+
+  <h3>3.12 Interference / Press / Shrink Fits</h3>
+
+  <div class="warning">
+    <strong>⚠️ THIS TOPIC IS IN THE PAST EXAM — STUDY CAREFULLY</strong>
+  </div>
+
+  <h4>Key Definitions</h4>
+  <table>
+    <tr><th>Term</th><th>Definition</th></tr>
+    <tr><td><strong>Basic size</strong></td><td>Nominal diameter of the fit</td></tr>
+    <tr><td><strong>Maximum interference (δ<sub>max</sub>)</strong></td><td>Max outer shaft diameter − Min inner hole diameter: δ<sub>max</sub> = (D<sub>shaft,max</sub> − d<sub>hole,min</sub>)/2</td></tr>
+    <tr><td><strong>Minimum interference</strong></td><td>Min shaft − Max hole</td></tr>
+  </table>
+
+  <div class="formula-box">
+    <strong>Pressure for interference fit:</strong><br>
+    <div class="formula">P = [E·δ<sub>max</sub>·(Rₒ² − Rᵢ²)] / [2·Rᵢ·Rₒ²]</div>
+    <div class="formula-note">Modified form from the exam: P = E·δ<sub>max</sub>·(Rₒ² − Rᵢ²)/(2Rᵢ·Rₒ²) where Rᵢ = inner radius (shaft), Rₒ = outer radius (hub)</div>
+  </div>
+
+  <div class="highlight">
+    <strong>⭐ PAST EXAM PROBLEM 4 pattern:</strong><br>
+    Given nominal hole ∅30, shaft diameters and outer hub diameters:<br>
+    <ul>
+      <li>Hole: D_max = 30.00, D_min = 29.99 (or D_max = 30.03, D_min = 29.95)</li>
+      <li>Shaft: d_max = 40.02, d_min = 39.98 (outer part)</li>
+    </ul>
+    <strong>Step 1:</strong> δ<sub>max</sub> = (40.02 − 29.95)/2 = 5.035 mm<br>
+    <strong>Step 2:</strong> Convert to radii: Rᵢ = 29.95/2 = 14.975 mm, Rₒ = 39.98/2 = 19.99 mm<br>
+    <strong>Step 3:</strong> Apply pressure formula to find P<sub>max</sub>
+  </div>
+</section>
+
+<!-- ===================== EXAM PATTERN ===================== -->
+<section id="exam-pattern">
+  <h2>🎯 Past Midterm Exam — What to Expect</h2>
+
+  <div class="exam-focus">
+    <h4>📋 Exam Structure (from 2564 past paper)</h4>
+    <ol>
+      <li><strong>Concept Questions</strong> (Chapter 2)
+        <ul>
+          <li>Design factor vs safety factor (why safety factor is better, ≥3×)</li>
+          <li>Engineering stress vs true stress (area assumption)</li>
+          <li>Malleability vs ductility (compression vs tension)</li>
+          <li>Calc: Force / Area = safety factor (e.g., 5000/10 = 50)</li>
+        </ul>
+      </li>
+      <li><strong>Problem: V–M Diagram using Singularity Functions</strong> (Chapter 3)
+        <ul>
+          <li>Draw FBD, find support reactions</li>
+          <li>Write w(x) with singularity brackets</li>
+          <li>Integrate to V and M</li>
+          <li>Draw V–M diagrams</li>
+        </ul>
+      </li>
+      <li><strong>Problem: Bending + Shear Stress in Composite Beam</strong> (Chapter 3)
+        <ul>
+          <li>Find centroid / neutral axis</li>
+          <li>Compute I around neutral axis (parallel axis theorem)</li>
+          <li>Normal stress: σ = −Mc/I</li>
+          <li>Shear stress: τ = VQ/Ib</li>
+        </ul>
+      </li>
+      <li><strong>Problem: Shaft with Torsion + Bending</strong> (Chapter 3)
+        <ul>
+          <li>Torque equilibrium → belt tensions</li>
+          <li>Find bearing reactions</li>
+          <li>V–M diagrams → M<sub>max</sub></li>
+          <li>σ = 32M/πd³, τ = 16T/πd³</li>
+          <li>Principal stresses & τ<sub>max</sub></li>
+        </ul>
+      </li>
+      <li><strong>Problem: Interference Fit</strong> (Chapter 3)
+        <ul>
+          <li>δ<sub>max</sub> from shaft max & hole min</li>
+          <li>Pressure formula P<sub>max</sub></li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <h3>Formula Sheet — Must Know Cold</h3>
+  <table>
+    <tr><th>Topic</th><th>Formula</th></tr>
+    <tr><td>Stress</td><td>σ = F/A</td></tr>
+    <tr><td>Strain</td><td>ε = Δl/l₀</td></tr>
+    <tr><td>Young's modulus</td><td>E = σ/ε</td></tr>
+    <tr><td>Brinell→Steel Su</td><td>S<sub>u</sub> = 0.5·H<sub>B</sub> kpsi = 3.4·H<sub>B</sub> MPa</td></tr>
+    <tr><td>Brinell→Cast iron Su</td><td>S<sub>u</sub> = 0.23·H<sub>B</sub> − 12.5 kpsi = 1.58·H<sub>B</sub> − 86 MPa</td></tr>
+    <tr><td>Poisson's ratio</td><td>ν = ε<sub>lat</sub>/ε<sub>axial</sub></td></tr>
+    <tr><td>Shear modulus</td><td>G = E/[2(1+ν)]</td></tr>
+    <tr><td>Bending stress</td><td>σ = −Mc/I</td></tr>
+    <tr><td>Round shaft bending</td><td>σ = 32M/πd³</td></tr>
+    <tr><td>Beam shear stress</td><td>τ = VQ/Ib</td></tr>
+    <tr><td>Rectangular max shear</td><td>τ<sub>max</sub> = 1.5 V/A</td></tr>
+    <tr><td>Torsion</td><td>τ = Tc/J = 16T/πd³</td></tr>
+    <tr><td>Polar inertia solid</td><td>J = πd⁴/32</td></tr>
+    <tr><td>Polar inertia hollow</td><td>J = π(dₒ⁴−dᵢ⁴)/32</td></tr>
+    <tr><td>Rectangle inertia</td><td>I = bh³/12</td></tr>
+    <tr><td>Circle inertia</td><td>I = πd⁴/64</td></tr>
+    <tr><td>Parallel axis</td><td>I = I<sub>c</sub> + Ad²</td></tr>
+    <tr><td>Principal stress</td><td>σ₁,₂ = (σ<sub>x</sub>+σ<sub>y</sub>)/2 ± √[((σ<sub>x</sub>−σ<sub>y</sub>)/2)² + τ<sub>xy</sub>²]</td></tr>
+    <tr><td>Max shear</td><td>τ<sub>max</sub> = √[((σ<sub>x</sub>−σ<sub>y</sub>)/2)² + τ<sub>xy</sub>²]</td></tr>
+    <tr><td>σ on angle plane</td><td>σ = (σ<sub>x</sub>+σ<sub>y</sub>)/2 + (σ<sub>x</sub>−σ<sub>y</sub>)/2·cos2φ + τ<sub>xy</sub>·sin2φ</td></tr>
+    <tr><td>τ on angle plane</td><td>τ = −(σ<sub>x</sub>−σ<sub>y</sub>)/2·sin2φ + τ<sub>xy</sub>·cos2φ</td></tr>
+    <tr><td>V–M relations</td><td>w = −dV/dx, V = dM/dx</td></tr>
+    <tr><td>Interference fit pressure</td><td>P = E·δ<sub>max</sub>·(Rₒ²−Rᵢ²)/(2Rᵢ·Rₒ²)</td></tr>
+  </table>
+
+  <h3>🔄 Chapter 2 Concept Quick-Review Flashcards</h3>
+  <div class="checklist">
+    <li>Stress = Force / original area</li>
+    <li>Strain = Change in length / original length</li>
+    <li>Young's Modulus = slope of elastic region of stress-strain curve</li>
+    <li>Yield point: strain increases rapidly, stress does not</li>
+    <li>Ultimate strength = highest point on stress-strain curve</li>
+    <li>Toughness = area under the entire stress-strain curve</li>
+    <li>Ductility = plastic deformation under TENSION</li>
+    <li>Malleability = plastic deformation under COMPRESSION</li>
+    <li>Hardness = resistance to penetration (Rockwell H<sub>R</sub>=E−e, Brinell H<sub>B</sub>)</li>
+    <li>Hot working = above recrystallization temp (strength↑ ductility↑)</li>
+    <li>Cold working = at room temp (yield↑ ultimate↑ hardness↑ ductility↓)</li>
+    <li>Annealing: slow cooling in furnace → ductility ↑</li>
+    <li>Normalising: cooling in air → ductility ↑, finer grain</li>
+    <li>Quenching: rapid cooling in water/oil → hardness ↑, brittleness ↑</li>
+    <li>Tempering: reheat below critical → hardness ↓, brittleness ↓</li>
+    <li>Cast iron: >2.1% C, brittle, cannot weld</li>
+    <li>Steel: <2.1% C, can be hardened & tempered, absorbs shock</li>
+    <li>Wrought iron: very low C, purest form, malleable/ductile</li>
+    <li>Ceramics: metal + non-metal, strong bonds → hard, stiff, not conductive</li>
+    <li>Thermoplastic: can remold when heated, recyclable</li>
+    <li>Thermoset: cannot remold, burns if reheated</li>
+    <li>Composite = Filler + Matrix, direction-dependent properties</li>
+  </div>
+</section>
+
+<!-- ===================== SOLVED EXAMPLES ===================== -->
+<section id="solved">
+  <h2>🧮 More Solved Examples — Step by Step</h2>
+
+  <h3>Example A: V–M Diagram with Singularity Functions (Full Solution)</h3>
+  <div class="exam-focus">
+    <h4>Problem</h4>
+    <p>Simply supported beam, span 10 m. Supports at A (x=0) and B (x=10). Point load 4 kN at x=6, distributed load 2 kN/m from x=0 to x=2.</p>
+    <h4>Step 1: Find reactions</h4>
+    <div class="formula-box">
+      <div class="formula">ΣM_B = 0: R_A(10) − 2(2)(9) − 4(4) = 0</div>
+      <div class="formula">10R_A − 36 − 16 = 0 → R_A = 5.2 kN</div>
+      <div class="formula">ΣF_y = 0: R_A + R_B − 4 − 4 = 0 → R_B = 2.8 kN</div>
+    </div>
+    <h4>Step 2: Write load equation w(x)</h4>
+    <div class="formula-box">
+      <div class="formula">w = 5.2⟨x−0⟩⁻¹ − 2⟨x−0⟩⁰ + 2⟨x−2⟩⁰ − 4⟨x−6⟩⁻¹ − 2.8⟨x−10⟩⁻¹</div>
+      <div class="formula-note">Note: distributed load starts at 0, ends at 2 (add +2⟨x−2⟩⁰ to cancel)</div>
+    </div>
+    <h4>Step 3: Integrate to get V</h4>
+    <div class="formula-box">
+      <div class="formula">V = 5.2⟨x−0⟩⁰ − 2⟨x−0⟩¹ + 2⟨x−2⟩¹ − 4⟨x−6⟩⁰ − 2.8⟨x−10⟩⁰</div>
+    </div>
+    <h4>Step 4: Integrate to get M</h4>
+    <div class="formula-box">
+      <div class="formula">M = 5.2⟨x−0⟩¹ − ⟨x−0⟩² + ⟨x−2⟩² − 4⟨x−6⟩¹ − 2.8⟨x−10⟩¹</div>
+    </div>
+    <h4>Step 5: Evaluate sections</h4>
+    <table>
+      <tr><th>Section</th><th>V(x)</th><th>M(x)</th></tr>
+      <tr><td>0 ≤ x < 2</td><td>V = 5.2 − 2x</td><td>M = 5.2x − x²</td></tr>
+      <tr><td>2 ≤ x < 6</td><td>V = 5.2 − 2x + 2(x−2) = 1.2</td><td>M = 5.2x − x² + (x−2)²</td></tr>
+      <tr><td>6 ≤ x ≤ 10</td><td>V = 1.2 − 4 = −2.8</td><td>M = 5.2x − x² + (x−2)² − 4(x−6)</td></tr>
+    </table>
+    <h4>Step 6: Find M_max</h4>
+    <div class="formula-box">
+      <div class="formula">M_max occurs where V = 0: 5.2 − 2x = 0 → x = 2.6 m</div>
+      <div class="formula">M(2.6) = 5.2(2.6) − (2.6)² = 13.52 − 6.76 = <strong>6.76 kN·m</strong></div>
+    </div>
+  </div>
+
+  <h3>Example B: Composite Beam — Bending & Shear Stress (Full Solution)</h3>
+  <div class="exam-focus">
+    <h4>Problem</h4>
+    <p>T-shaped beam cross-section: flange 100mm × 20mm on top, web 20mm × 80mm below. M = 10 kN·m, V = 15 kN. Find σ_max and τ_max.</p>
+    <h4>Step 1: Find centroid (neutral axis)</h4>
+    <div class="formula-box">
+      <div class="formula">A₁ (flange) = 100×20 = 2000 mm², y₁ = 90 mm (from bottom)</div>
+      <div class="formula">A₂ (web) = 20×80 = 1600 mm², y₂ = 40 mm</div>
+      <div class="formula">ȳ = (2000×90 + 1600×40) / (2000+1600) = (180000+64000)/3600 = <strong>67.8 mm</strong></div>
+    </div>
+    <h4>Step 2: Find I about neutral axis (parallel axis theorem)</h4>
+    <div class="formula-box">
+      <div class="formula">I₁ = (100×20³)/12 + 2000(90−67.8)² = 66,667 + 2000(22.2)² = 66,667 + 985,680 = 1,052,347 mm⁴</div>
+      <div class="formula">I₂ = (20×80³)/12 + 1600(67.8−40)² = 853,333 + 1600(27.8)² = 853,333 + 1,236,544 = 2,089,877 mm⁴</div>
+      <div class="formula">I_total = 1,052,347 + 2,089,877 = <strong>3,142,224 mm⁴</strong></div>
+    </div>
+    <h4>Step 3: Bending stress (max at outer fiber)</h4>
+    <div class="formula-box">
+      <div class="formula">c_max = 100 − 67.8 = 32.2 mm (top) or 67.8 mm (bottom)</div>
+      <div class="formula">σ_max = Mc/I = (10×10⁶)(67.8)/(3,142,224) = <strong>215.8 MPa</strong> (at bottom, tension)</div>
+    </div>
+    <h4>Step 4: Shear stress (max at neutral axis)</h4>
+    <div class="formula-box">
+      <div class="formula">Q at NA = A₁(90−67.8) = 2000(22.2) = 44,400 mm³</div>
+      <div class="formula">τ_max = VQ/(Ib) = (15×10³)(44,400)/(3,142,224 × 20) = <strong>10.6 MPa</strong></div>
+    </div>
+  </div>
+
+  <h3>Example C: Shaft Torsion + Bending (Different Numbers)</h3>
+  <div class="exam-focus">
+    <h4>Problem</h4>
+    <p>Solid shaft d = 40 mm. M_max = 800 N·m, T = 300 N·m. Find σ, τ, principal stresses, τ_max.</p>
+    <h4>Step 1: Bending stress</h4>
+    <div class="formula-box">
+      <div class="formula">σ = 32M/(πd³) = 32(800×10³)/(π × 40³) = 25,600,000/201,062 = <strong>127.3 MPa</strong></div>
+    </div>
+    <h4>Step 2: Torsional shear</h4>
+    <div class="formula-box">
+      <div class="formula">τ = 16T/(πd³) = 16(300×10³)/(π × 40³) = 4,800,000/201,062 = <strong>23.9 MPa</strong></div>
+    </div>
+    <h4>Step 3: Principal stresses</h4>
+    <div class="formula-box">
+      <div class="formula">σ₁,₂ = 127.3/2 ± √[(127.3/2)² + 23.9²] = 63.65 ± √(4051 + 571) = 63.65 ± √4622</div>
+      <div class="formula">= 63.65 ± 68.0 → <strong>σ₁ = 131.6 MPa, σ₂ = −4.3 MPa</strong></div>
+      <div class="formula"><strong>τ_max = 68.0 MPa</strong></div>
+    </div>
+  </div>
+
+  <h3>Example D: Interference Fit (Full Solution)</h3>
+  <div class="exam-focus">
+    <h4>Problem</h4>
+    <p>Hole: D_max = 50.02 mm, D_min = 50.00 mm. Shaft (hub): d_max = 60.05 mm, d_min = 60.00 mm. E = 200 GPa. Find P_max.</p>
+    <h4>Step 1: Find δ_max</h4>
+    <div class="formula-box">
+      <div class="formula">δ_max = (Shaft_max − Hole_min)/2 = (60.05 − 50.00)/2 = <strong>5.025 mm</strong></div>
+    </div>
+    <h4>Step 2: Convert to radii</h4>
+    <div class="formula-box">
+      <div class="formula">Rᵢ = 50.00/2 = <strong>25 mm</strong> (inner/shaft radius)</div>
+      <div class="formula">Rₒ = 60.00/2 = <strong>30 mm</strong> (outer/hub radius)</div>
+    </div>
+    <h4>Step 3: Apply pressure formula</h4>
+    <div class="formula-box">
+      <div class="formula">P = E·δ_max·(Rₒ²−Rᵢ²)/(2·Rᵢ·Rₒ²)</div>
+      <div class="formula">= (200×10³)(5.025)(30²−25²)/(2×25×30²)</div>
+      <div class="formula">= (200×10³)(5.025)(900−625)/(2×25×900)</div>
+      <div class="formula">= (200×10³)(5.025)(275)/(45,000)</div>
+      <div class="formula">= 276,375,000/45,000 = <strong>6,141.7 MPa</strong></div>
+    </div>
+  </div>
+
+  <h3>Example E: Plane Stress Transformation (Full Solution)</h3>
+  <div class="exam-focus">
+    <h4>Problem</h4>
+    <p>σ_x = 80 MPa, σ_y = 20 MPa, τ_xy = 30 MPa. Find principal stresses and max shear.</p>
+    <h4>Step 1: Average stress & radius</h4>
+    <div class="formula-box">
+      <div class="formula">σ_avg = (σ_x+σ_y)/2 = (80+20)/2 = <strong>50 MPa</strong></div>
+      <div class="formula">R = √[((σ_x−σ_y)/2)² + τ_xy²] = √[(30)² + 30²] = √(900+900) = √1800 = <strong>42.4 MPa</strong></div>
+    </div>
+    <h4>Step 2: Principal stresses</h4>
+    <div class="formula-box">
+      <div class="formula">σ₁ = 50 + 42.4 = <strong>92.4 MPa</strong></div>
+      <div class="formula">σ₂ = 50 − 42.4 = <strong>7.6 MPa</strong></div>
+      <div class="formula"><strong>τ_max = 42.4 MPa</strong></div>
+    </div>
+    <h4>Step 3: Principal direction</h4>
+    <div class="formula-box">
+      <div class="formula">tan 2φ_p = 2τ_xy/(σ_x−σ_y) = 2(30)/(80−20) = 60/60 = 1</div>
+      <div class="formula">2φ_p = 45° → <strong>φ_p = 22.5°</strong></div>
+    </div>
+  </div>
+
+  <h3>Example F: Brinell Hardness → Strength (Ch 2)</h3>
+  <div class="exam-focus">
+    <h4>Problem</h4>
+    <p>A steel member has H_B = 275. Estimate S_u in MPa. Then a grey cast iron part has H_B = 200. Estimate S_u in kpsi.</p>
+    <h4>Solution</h4>
+    <div class="formula-box">
+      <div class="formula">Steel: S_u = 3.4 × H_B = 3.4 × 275 = <strong>935 MPa</strong></div>
+      <div class="formula">Cast iron: S_u = 0.23 × H_B − 12.5 = 0.23(200) − 12.5 = 46 − 12.5 = <strong>33.5 kpsi</strong></div>
+      <div class="formula-note">Compare to Table A: ASTM No. 35 grey cast iron</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>💡 HOW TO SOLVE ANY PROBLEM:</strong> Always write down the formula first, plug in numbers with units, then compute. Check units are consistent (N·mm vs N·m). For shafts, remember J = 2I. For composite beams, always find the centroid FIRST before computing I.
+  </div>
+</section>
+
+<!-- ===================== PRACTICE ===================== -->
+<section id="practice">
+  <h2>✏️ Practice Problems to Solve Before the Exam</h2>
+
+  <h3>🧮 V–M Diagram & Singularity Functions — Worked Practice</h3>
+
+  <div class="tip">
+    <strong>💡 THE 3 RULES OF SINGULARITY FUNCTIONS:</strong>
+    <ol>
+      <li><strong>Bracket:</strong> ⟨x−a⟩ⁿ = 0 when x < a, and = (x−a)ⁿ when x ≥ a</li>
+      <li><strong>Integration:</strong> ∫⟨x−a⟩ⁿ dx = ⟨x−a⟩ⁿ⁺¹/(n+1)</li>
+      <li><strong>Chain:</strong> w → V → M (integrate twice, always)</li>
+    </ol>
+  </div>
+
+  <div class="exam-focus">
+    <h4>📝 PRACTICE PROBLEM A: Simply Supported Beam (Full Solution)</h4>
+    <p><strong>Problem:</strong> Span 10 m, support A at x=0, support B at x=10. Point load 4 kN at x=6, distributed load 2 kN/m from x=0 to x=2.</p>
+    <p><strong>Step 1 — Find reactions:</strong></p>
+    <div class="formula-box">
+      <div class="formula">ΣM_B = 0: R_A(10) − 2(2)(9) − 4(4) = 0 → 10R_A − 36 − 16 = 0 → <strong>R_A = 5.2 kN</strong></div>
+      <div class="formula">ΣF_y = 0: R_A + R_B − 4 − 4 = 0 → <strong>R_B = 2.8 kN</strong></div>
+      <div class="formula-note">Distributed load total = 2 kN/m × 2 m = 4 kN acting at midpoint (9 m from B)</div>
+    </div>
+    <p><strong>Step 2 — Write load equation w(x):</strong></p>
+    <pre>w = 5.2⟨x−0⟩⁻¹ − 2⟨x−0⟩⁰ + 2⟨x−2⟩⁰ − 4⟨x−6⟩⁻¹ − 2.8⟨x−10⟩⁻¹</pre>
+    <p class="note" style="color:#e94560; font-weight:700;">⚠️ The +2⟨x−2⟩⁰ CANCELS the distributed load after x=2! Without it, the load goes to infinity.</p>
+    <p><strong>Step 3 — Integrate w → V:</strong></p>
+    <pre>V = 5.2⟨x−0⟩⁰ − 2⟨x−0⟩¹ + 2⟨x−2⟩¹ − 4⟨x−6⟩⁰ − 2.8⟨x−10⟩⁰</pre>
+    <p><strong>Step 4 — Integrate V → M:</strong></p>
+    <pre>M = 5.2⟨x−0⟩¹ − ⟨x−0⟩² + ⟨x−2⟩² − 4⟨x−6⟩¹ − 2.8⟨x−10⟩¹</pre>
+    <p><strong>Step 5 — Evaluate each section (drop inactive brackets):</strong></p>
+    <table>
+      <tr><th>Section</th><th>V(x)</th><th>M(x)</th></tr>
+      <tr><td>0 ≤ x < 2</td><td>V = 5.2 − 2x</td><td>M = 5.2x − x²</td></tr>
+      <tr><td>2 ≤ x < 6</td><td>V = 5.2 − 2x + 2(x−2) = <strong>1.2</strong></td><td>M = 5.2x − x² + (x−2)²</td></tr>
+      <tr><td>6 ≤ x ≤ 10</td><td>V = 1.2 − 4 = <strong>−2.8</strong></td><td>M = 5.2x − x² + (x−2)² − 4(x−6)</td></tr>
+    </table>
+    <p><strong>Step 6 — Find M_max (V = 0):</strong></p>
+    <div class="formula-box">
+      <div class="formula">M_max occurs where V = 0 → 5.2 − 2x = 0 → x = 2.6 m</div>
+      <div class="formula">M(2.6) = 5.2(2.6) − (2.6)² = 13.52 − 6.76 = <strong>6.76 kN·m</strong></div>
+    </div>
+    <p><strong>Check:</strong> V(10) = −2.8 = −R_B ✓, M(10) = 0 ✓ (simply supported ends)</p>
+  </div>
+
+  <div class="exam-focus">
+    <h4>📝 PRACTICE PROBLEM B: Cantilever Beam (Full Solution)</h4>
+    <p><strong>Problem:</strong> Cantilever length 6 m, uniform load w₀ = 3 kN/m over entire length, fixed at A.</p>
+    <p><strong>Step 1 — Reactions at fixed support A:</strong></p>
+    <div class="formula-box">
+      <div class="formula">R_A = w₀L = 3(6) = <strong>18 kN ↑</strong></div>
+      <div class="formula">M_A = w₀L²/2 = 3(36)/2 = <strong>54 kN·m (CW)</strong></div>
+    </div>
+    <p><strong>Step 2 — w(x):</strong> Only the distributed load from A:</p>
+    <pre>w = −3⟨x−0⟩⁰</pre>
+    <p><strong>Step 3 — V(x) = ∫w dx:</strong></p>
+    <pre>V = −3⟨x−0⟩¹ = −3x   (from 0 to 6)</pre>
+    <div class="formula-box">At x=6: V = −18 kN ✓ (matches R_A)</div>
+    <p><strong>Step 4 — M(x) = ∫V dx:</strong></p>
+    <pre>M = −(3/2)⟨x−0⟩² = −1.5x²</pre>
+    <div class="formula-box">At x=6: M = −1.5(36) = −54 kN·m ✓ (matches M_A)</div>
+    <p><strong>Step 5 — Draw:</strong> V is linear 0 → −18 kN; M is parabolic 0 → −54 kN·m.</p>
+  </div>
+
+  <div class="highlight">
+    <strong> HOW TO READ A V–M DIAGRAM (exam shortcuts):</strong>
+    <ul>
+      <li><strong>V jumps up</strong> → upward point load/reaction at that x</li>
+      <li><strong>V jumps down</strong> → downward point load at that x</li>
+      <li><strong>V is constant</strong> → no distributed load in that section</li>
+      <li><strong>V is sloped line</strong> → uniform load w = −slope</li>
+      <li><strong>V crosses zero</strong> → <span class="red">M is MAX here — the critical value you use for stress!</span></li>
+      <li><strong>M is linear</strong> → V is constant there</li>
+      <li><strong>M is parabolic</strong> → V is linear there (under uniform load)</li>
+    </ul>
+  </div>
+
+  <h3>Problem Set 1 — Chapter 2 Concepts</h3>
+  <ol>
+    <li>A steel member has a Brinell hardness of H<sub>B</sub> = 250. Estimate the ultimate strength in MPa.<br><em>Ans: S<sub>u</sub> = 3.4 × 250 = 850 MPa</em></li>
+    <li>A grey cast iron part has H<sub>B</sub> = 180. Estimate S<sub>u</sub> in kpsi.<br><em>Ans: S<sub>u</sub> = 0.23(180) − 12.5 = 28.9 kpsi</em></li>
+    <li>1040 hot-rolled steel heat-treated to S<sub>u</sub> ≈ 120 kpsi. What H<sub>B</sub> expected?<br><em>Ans: H<sub>B</sub> = 120/0.5 = 240</em></li>
+    <li>Which is better between safety factor and design factor? Explain why.</li>
+    <li>Explain the difference between engineering stress and true stress.</li>
+    <li>What is strain hardening? How does it affect yield strength and ductility?</li>
+    <li>List 3 differences between hot working and cold working.</li>
+    <li>Compare annealing, normalising, quenching, and tempering.</li>
+    <li>What is the difference between thermoplastic and thermoset? Give 2 examples each.</li>
+    <li>What are the 3 steps in material selection?</li>
+  </ol>
+
+  <h3>Problem Set 2 — V–M Diagrams</h3>
+  <ol>
+    <li>Simple beam, span 10 m, supports at x=0 and x=10. Point load 4 kN at x=6, distributed load 2 kN/m from x=0 to x=2.
+      <ul>
+        <li>Draw FBD, find reactions</li>
+        <li>Write w(x) using singularity functions</li>
+        <li>Find V(x) and M(x)</li>
+        <li>Sketch V–M diagrams</li>
+      </ul>
+    </li>
+    <li>Cantilever beam, length L = 6 m, distributed load w₀ = 3 kN/m over entire length.
+      <ul>
+        <li>Find R<sub>A</sub> = w₀L = 18 kN, M<sub>A</sub> = w₀L²/2 = 54 kN·m</li>
+        <li>V(x) = −w₀x, M(x) = −w₀x²/2</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h3>Problem Set 3 — Bending & Shear Stress</h3>
+  <ol>
+    <li>A rectangular beam b=50mm, h=100mm supports M = 10 kN·m and V = 20 kN.
+      <ul>
+        <li>I = bh³/12 = (50)(100³)/12 = 4.167×10⁶ mm⁴</li>
+        <li>σ<sub>max</sub> = Mc/I = (10×10⁶)(50)/(4.167×10⁶) = 120 MPa</li>
+        <li>τ<sub>max</sub> = 1.5V/A = 1.5(20000)/(50×100) = 6 MPa</li>
+      </ul>
+    </li>
+    <li>Solid round shaft d=50mm, M=1000 N·m, T=600 N·m.
+      <ul>
+        <li>σ = 32M/πd³ = 32(1000×10³)/(π×50³) = 81.5 MPa</li>
+        <li>τ = 16T/πd³ = 16(600×10³)/(π×50³) = 24.4 MPa</li>
+        <li>σ₁,₂ = 81.5/2 ± √[(81.5/2)² + 24.4²] = 40.75 ± 47.5 → σ₁ = 88.2, σ₂ = −6.75 MPa</li>
+        <li>τ<sub>max</sub> = 47.5 MPa</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h3>Problem Set 4 — Interference Fit</h3>
+  <ol>
+    <li>Hole: D<sub>max</sub> = 50.02, D<sub>min</sub> = 50.00. Shaft: d<sub>max</sub> = 60.05, d<sub>min</sub> = 60.00. E = 200 GPa.
+      <ul>
+        <li>δ<sub>max</sub> = (60.05 − 50.00)/2 = 5.025 mm</li>
+        <li>Rᵢ = 50.00/2 = 25 mm, Rₒ = 60.00/2 = 30 mm</li>
+        <li>P = E·δ·(Rₒ²−Rᵢ²)/(2Rᵢ·Rₒ²) = (200×10³·5.025·(900−625))/(2·25·900) = ... MPa</li>
+      </ul>
+    </li>
+  </ol>
+</section>
+
+<footer>
+  <p><strong>Good luck on your midterm! 🍀</strong> — Study the formula sheet, practice singularity functions, and review the past exam answer key.</p>
+</footer>
+
+</div>
+</body>
+</html>

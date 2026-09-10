@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Machine Design Midterm — Compact Cheat Sheet</title>
+<script>
+MathJax = { tex: { inlineMath: [['$', '$']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #111; background: white; margin: 8px; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  td { border: 1px solid #333; padding: 2px 5px; vertical-align: top; font-size: 10.5px; line-height: 1.3; }
+  .h { background: #0f3460; color: #fff; font-weight: bold; text-align: center; font-size: 11px; }
+  .r { color: #d00; font-weight: bold; }
+  .b { font-weight: bold; }
+  .star { background: #ffe8e8; }
+  .formula { font-family: 'Cambria Math', Georgia, serif; }
+  @media print { body { margin: 0; } }
+</style>
+</head>
+<body>
+<table>
+<tr class="h"><td colspan="4">📝 MACHINE DESIGN MIDTERM — ULTRA COMPACT CHEAT SHEET (write by hand)</td></tr>
+
+<!-- ROW 1 -->
+<tr>
+  <td style="width:25%" class="b">CH1 Design/Safety</td>
+  <td style="width:25%" class="b">CH2 Stress/Strain</td>
+  <td style="width:25%" class="b">CH2 Properties</td>
+  <td style="width:25%" class="b">CH2 Hardness→S_u</td>
+</tr>
+<tr>
+  <td>Safety ≥ 3× design<br>n = S_allow/σ_act<br>5000/10 = 50</td>
+  <td>σ=F/A₀, ε=Δl/l₀, E=σ/ε<br><span class="r">Eng area A₀ const; True = actual area → true>eng</span><br>True ε = ln(l/l₀)</td>
+  <td>Ductility=TENSION<br>Malleability=COMPRESS<br>Toughness=area σ-ε<br>Stiffness=E<br>Hardness=penetration</td>
+  <td>Steel: S_u=3.4H_B MPa<br>Cast: S_u=1.58H_B−86 MPa<br>Rockwell: H_R=E−e</td>
+</tr>
+
+<!-- ROW 2 -->
+<tr>
+  <td class="b">CH2 Heat Treatment</td>
+  <td class="b">CH2 Hot vs Cold</td>
+  <td class="b">CH2 Ferrous (%C)</td>
+  <td class="b">CH2 Polymers</td>
+</tr>
+<tr>
+  <td>Anneal=furnace slow→duct↑<br>Normalize=air→duct↑finer<br>Quench=water/oil→hard↑brittle↑<br>Temper=reheat→hard↓brittle↓<br>Case=surface C→hard↑core same</td>
+  <td>Hot=above recryst→S↑duct↑<br>Cold=RT→<span class="r">yield↑ult↑hard↑ duct↓</span><br>Cold=strain hardening</td>
+  <td>Wrought=very low C purest<br>Steel=<2.1%C tough weldable<br>Cast=>2.1%C brittle no weld<br>Types: Grey(graphite) White(cementite) Ductile(MgFeSi obeys Hooke)</td>
+  <td>Thermo=remold when heat (PE PP ABS)<br>Thermoset=no remold burn (epoxy phenol)<br>All plastics=polymer, not reverse</td>
+</tr>
+
+<!-- ROW 3 -->
+<tr>
+  <td class="b">CH3 Equilibrium / FBD</td>
+  <td class="b">CH3 V–M Relations</td>
+  <td class="b">CH3 Singularity</td>
+  <td class="b">CH3 Strain/Poisson</td>
+</tr>
+<tr>
+  <td>ΣF_x=ΣF_y=0, ΣM=0<br>Roller=1N, Pin=2F, Fixed=2F+M</td>
+  <td>w=−dV/dx, V=dM/dx<br>V=∫w dx, M=∫V dx</td>
+  <td>Pt:⟨x−a⟩⁻¹ Uni:⟨x−a⟩⁰ Ramp:⟨x−a⟩¹ Mom:⟨x−a⟩⁻²<br>Integrate: ⟨x−a⟩ⁿ→⟨x−a⟩ⁿ⁺¹/(n+1)<br>w→V→M</td>
+  <td>ν=ε_lat/ε_axial (≈0.3)<br>G=E/[2(1+ν)]<br>K=E/[3(1−2ν)]</td>
+</tr>
+
+<!-- ROW 4 -->
+<tr>
+  <td class="b">CH3 Plane Stress Transform</td>
+  <td class="b">CH3 Principal Stresses</td>
+  <td class="b">CH3 Mohr</td>
+  <td class="b">CH3 Inertia</td>
+</tr>
+<tr>
+  <td>σ=(σx+σy)/2+(σx−σy)/2·cos2φ+τ_xy sin2φ<br>τ=−(σx−σy)/2·sin2φ+τ_xy cos2φ<br>tan2φ_p=2τ_xy/(σx−σy)</td>
+  <td>σ₁,₂=(σx+σy)/2±√[((σx−σy)/2)²+τ_xy²]<br>τ_max=√[((σx−σy)/2)²+τ_xy²]<br>On σ planes τ=0</td>
+  <td>C=(σx+σy)/2<br>R=√[((σx−σy)/2)²+τ_xy²]<br>σ₁=C+R σ₂=C−R τ_max=R</td>
+  <td>I_rect=bh³/12<br>I_circ=πd⁴/64<br>J_solid=πd⁴/32<br>J_hollow=π(dₒ⁴−dᵢ⁴)/32<br>I=I_c+Ad², ȳ=ΣAᵢyᵢ/ΣAᵢ</td>
+</tr>
+
+<!-- ROW 5 -->
+<tr>
+  <td class="b">CH3 Beam Stress</td>
+  <td class="b star">⭐ CH3 Shaft Bend+Torsion (6 steps)</td>
+  <td class="b star" colspan="2">⭐ CH3 Interference Fit</td>
+</tr>
+<tr>
+  <td>σ=−Mc/I (bend)<br>σ=32M/πd³ (round)<br>τ=VQ/(Ib), τ_max=1.5V/A<br>Q=A′·ȳ′</td>
+  <td>1.(T₁−T₂)r_A=(T₁'−T₂')r_B → tensions<br>2.FBD ΣM=0 ΣF=0 → reactions<br>3.V-M → M_max<br>4.σ=32M/πd³<br>5.τ=16T/πd³<br>6.σ₁,₂=σ/2±√[(σ/2)²+τ²] τ_max=√[(σ/2)²+τ²]<br><span class="r">J=2I → σ=32M/πd³, τ=16T/πd³</span></td>
+  <td colspan="2">δ_max=(Shaft_max−Hole_min)/2<br>P=E·δ_max·(Rₒ²−Rᵢ²)/(2·Rᵢ·Rₒ²) Rᵢ=inner Rₒ=outer<br>Ex: (40.02−29.95)/2=5.035mm, Rᵢ=14.975, Rₒ=19.99</td>
+</tr>
+
+</table>
+</body>
+</html>

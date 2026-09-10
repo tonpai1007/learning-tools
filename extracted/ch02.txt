@@ -1,0 +1,1595 @@
+FILE: C:\Users\Tonpa\Downloads\midterm\Machine\Ch02 - Materials.pdf
+TOTAL PAGES: 96
+
+============================================================
+PAGE 1 (images: 6)
+============================================================
+Principle of Machine Design
+Chapter 2
+Materials
+Kamol Wasapinyokul
+College of Advanced Manufacturing Innovation
+King Mongkut’s Institute of Technology Ladkrabang
+
+============================================================
+PAGE 2 (images: 2)
+============================================================
+Outlines
+1. Mechanical properties of materials
+– Strength, stress, and strain
+– Hardness
+– Impact strength or impact energy
+2. Materials
+– Metals
+• Forming
+• Treatment
+• Ferrous metals & non-ferrous metals
+– Ceramics
+– Polymers
+– Composite materials
+3. Material selection
+– Step
+– Property diagram
+Principle of Machine Design –Chapter 2 –Materials 2
+
+============================================================
+PAGE 3 (images: 2)
+============================================================
+Outlines
+1. Mechanical properties of materials
+– Strength, stress, and strain
+– Hardness
+– Impact strength or impact energy
+2. Materials
+– Metals
+• Forming
+• Treatment
+• Ferrous metals & non-ferrous metals
+– Ceramics
+– Polymers
+– Composite materials
+3. Material selection
+– Step
+– Property diagram
+Principle of Machine Design –Chapter 2 –Materials 3
+
+============================================================
+PAGE 4 (images: 2)
+============================================================
+Mechanical properties of materials
+• Important properties of materials
+− Strength
+− Elasticity or stiffness
+Observed through stress & strain
+− Ductility
+− Toughness
+− Malleability
+− Hardness
+− Impact strength
+− Machinability
+− Corrosive endurance
+− Beauty
+− Etc.
+Principle of Machine Design –Chapter 2 –Materials 4
+
+============================================================
+PAGE 5 (images: 3)
+============================================================
+Stress & Strain
+• Stress, σ
+– Ratio of force per unit area applied to the material.
+– A state property at a specific point in a body under the action of force
+F
+σ =
+A
+[Pa] Original cross
+0
+sectional area, [m2]
+– There are both tensile stress and compression stress.
+– Can be found from a tension test with a test object with standard sizes
+2.5 mm, 6.25 mm, 12.5 mm, and 0.505 in
+F F
+10 mm, 25 mm, 50 mm, 1 in, 2 in
+Principle of Machine Design –Chapter 2 –Materials 5
+
+============================================================
+PAGE 6 (images: 3)
+============================================================
+Stress & Strain
+• Strain, ε
+– Ratio of change in length to the original length
+– Can be found from a test using a tension-test object with standard sizes
+(similar to that for stress)
+– More strain → More material deformation.
+l − l
+ε= 0
+Original length, [m]
+l
+Strain [Unitless]
+0
+2.5 mm, 6.25 mm, 12.5 mm, and 0.505 in
+F F
+10 mm, 25 mm, 50 mm, 1 in, 2 in
+• Plot between stress and strain of a material is called
+engineering stress-strain diagram
+Principle of Machine Design –Chapter 2 –Materials 6
+
+============================================================
+PAGE 7 (images: 4)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Engineering stress-strain diagram
+– Plot between stress & strain of a material
+Ultimate strength (maximum)
+Fracture
+Yield point
+εincrease rapidly but σdoes not
+Stress, σ
+Elastic limit Separate the elastic and plastic deformations
+Proportional limit, σ∝ ε
+slope = Young’s modulus or modulus of elasticity, E
+E = σ/ ε, E ↑ ≡ stiffness ↑
+Clip: Tensile test
+Source: Lauren Villey, Essential skill: Identifying material properties: Strength, Ductility, density, thermal mass, https://www.youtube.com/watch?v=D8U4G5kcpcM2014,
+Principle of Machine Design –Chapter 2 –Materials 7
+
+============================================================
+PAGE 8 (images: 4)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Engineering stress-strain diagram
+– Plot between stress & strain of a material
+Yield point may be difficult to find experimentally.
+Stress, σ
+So off-set method is used.
+Typical the point that a line from ε= 0.002 (0.2%) parallel
+to the linear proportional part intersect the diagram
+Principle of Machine Design –Chapter 2 –Materials 8
+
+============================================================
+PAGE 9 (images: 3)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Several properties can be found from the diagram
+– Such as strength, ductility, malleability, brittleness, stiffness, toughness, and
+hysteresis.
+• Strength, S
+– Ability to withstand large stress before fracture. (Opposite to weak)
+– Indicated by ultimate strength
+– Ultimate strength ↑ ≡ Strength ↑
+Stronger
+Weaker
+Principle of Machine Design –Chapter 2 –Materials 9
+
+============================================================
+PAGE 10 (images: 3)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Ductility & Malleability
+– Abilities to have long plastic deformation before breaking under tensile force &
+compressive force. Example: Platinum, gold
+• Brittleness
+– Ability to have very short plastic deformation before breaking
+(Opposite to ductility & malleability). Example: Glass
+Ductile & malleable
+Brittle:
+Ultimate and fracture strength are nearly equal
+Principle of Machine Design –Chapter 2 –Materials 10
+
+============================================================
+PAGE 11 (images: 3)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Stiffness
+– Ability to withstand high force to deform during elastic deformation. (Opposite
+to soft)
+– Indicated by Young’s modulus.
+Young’s modulus ↑ ≡ Stiffness ↑
+Stiff
+Soft
+Principle of Machine Design –Chapter 2 –Materials 11
+
+============================================================
+PAGE 12 (images: 3)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Toughness
+– Ability to deform plastically and absorb high energy before breaking
+– Indicated by area under graph
+Area under graph ↑ ≡ Toughness ↑
+Tough
+Not tough
+Principle of Machine Design –Chapter 2 –Materials 12
+
+============================================================
+PAGE 13 (images: 3)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Hysteresis
+– Property that the strain is different when the force is increasing and decreasing.
+– Indicated by area in the loop (representing the energy stored)
+– Example: Rubber
+Hysteresis
+Principle of Machine Design –Chapter 2 –Materials 13
+
+============================================================
+PAGE 14 (images: 3)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Mechanical properties of some metals and metal alloys
+Source: Lauren Villey, Essential skill: Identifying material properties: Strength, Ductility, density, thermal mass
+Principle of Machine Design –Chapter 2 –Materials 14
+
+============================================================
+PAGE 15 (images: 5)
+============================================================
+Stress & Strain: Stress-strain diagram
+• However, engineering stress-strain diagram is not plotted by using
+the true value of σand ε.
+− Because the dimensions of the object change during deform.
+− Thus, true stress > engineering stress
+− For true strain (so called: logarithmic strain), this is calculated from:
+l
+dl l
+ε= ∫ =ln
+l l
+l 0
+0
+− True stress-strain diagram and engineering stress-strain diagram are
+different
+Principle of Machine Design –Chapter 2 –Materials 15
+
+============================================================
+PAGE 16 (images: 6)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Difference between true stress-strain diagram & engineering stress-
+strain diagram
+Engineering stress-strain diagram True stress-strain diagram
+Fracture stress > Ultimate stress
+Principle of Machine Design –Chapter 2 –Materials 16
+
+============================================================
+PAGE 17 (images: 3)
+============================================================
+Stress & Strain: Stress-strain diagram
+• Stress-strain diagram is usually plotted from the tensile test
+• Diagram from the compression test can also be plotted.
+• But compression test is more difficult because of uneven stress,
+buckling, bulge, etc.
+• For most ductile materials,
+tensile and compression strengths are about the same.
+• However, in some materials, such as cast irons, they are different
+• Tensile and compression strengths must be stated separately.
+S : Tensile strength (+)
+ut
+S : Compression strength (–)
+uc
+Principle of Machine Design –Chapter 2 –Materials 17
+
+============================================================
+PAGE 18 (images: 3)
+============================================================
+Stress & Strain: Strength of a material
+• Strength of a material, S
+– Specific property of a material
+• Can be found from tables given by manufacturers or professional organisations
+• Reported values are averaged from a number of testing.
+– Several types: Yield strength (S ), ultimate strength (S , S )
+y ut uc
+Example: Metals (Table A-22,
+Shigley’s book)
+Principle of Machine Design –Chapter 2 –Materials 18
+
+============================================================
+PAGE 19 (images: 3)
+============================================================
+Stress & Strain: Strength of a material
+• Strength of a material
+– Example: Metals (Table A-23, Shigley’s book)
+Principle of Machine Design –Chapter 2 –Materials 19
+
+============================================================
+PAGE 20 (images: 3)
+============================================================
+Stress & Strain: Temperature effect
+• Effects of temperature on strength of materials
+− For steel,
+T ↑ → S ↓ → S ↑ then ↓
+y u
+So at T↑ → steels are more ductile
+Plot from 145 tests of 21 carbon and alloy steels
+Principle of Machine Design –Chapter 2 –Materials 20
+
+============================================================
+PAGE 21 (images: 3)
+============================================================
+Stress & Strain: Temperature effect
+• Effects of temperature on strength of materials
+– At high temperature, some materials are permanently deformed
+even the applied load is < yield strength.
+– This continuous deformation is called creep.
+– Graph between constant load time and creep deformation
+• 2nd region:
+Constant minimum creep rate.
+Annealing effect
+• 3rd region:
+• 1st region:
+Increasing creep rate.
+Elastic and plastic.
+Decreasing creep rate • Reduction in area,
+due to strain hardening. true stress increase
+until fracture.
+Principle of Machine Design –Chapter 2 –Materials 21
+
+============================================================
+PAGE 22 (images: 4)
+============================================================
+Hardness
+• Hardness
+– Resistance of a material to be penetrated by a pointed tool.
+– Can be measured by many systems: Rockwell hardness & Brinell hardness
+Rockwell hardness
+− Method: Penetrating the material with an
+indenter with 2 forces: minor force F and
+0
+major force F .
+1
+− Hardness scale H is the difference between
+R
+the penetrating depth E due to the major force
+and the depth e by the minor force.
+H = E −e
+R
+http://www.gordonengland.co.uk/hardness/rockwell.htm
+Principle of Machine Design –Chapter 2 –Materials 22
+
+============================================================
+PAGE 23 (images: 3)
+============================================================
+Hardness
+• Hardness
+– Resistance of a material to be penetrated by a pointed tool.
+– Can be measured by many systems: Rockwell hardness & Brinell hardness
+Rockwell hardness
+− Different scales are used for different materials
+• A: Cemented carbides, thin steel and shallow case
+hardened steel
+• B: Copper alloys, soft steels, aluminium alloys,
+malleable irons, etc.
+• C: Steel, hard cast irons, case hardened steel and
+other materials harder than 100 HRB
+• D: Thin steel and medium case hardened steel and
+pearlitic malleable iron
+• E: Cast iron, aluminium and magnesium alloys,
+bearing metals
+• F: Annealed copper alloys, thin soft sheet metals
+• G: Phosphor bronze, beryllium copper, malleable
+irons HRH . . . . Aluminium, zinc, lead
+• K – V :Soft bearing metals, plastics and other very
+soft materials
+Principle of Machine Design –Chapter 2 –Materials 23
+
+============================================================
+PAGE 24 (images: 3)
+============================================================
+Hardness
+• Hardness
+– Resistance of a material to be penetrated by a pointed tool.
+– Can be measured by many systems: Rockwell hardness & Brinell hardness
+Brinell hardness
+− Method: penetrating the material with an indenting ball with a standard force
+− Hardness scale H is calculated by:
+B
+2F − Relation between H and S can be roughly
+H = B u
+B ( ) approximated
+πD D − D2 − d2
+• For steel • For cast iron
+0.5H kpsi 0.23H −12.5 kpsi
+S =  B S =  B
+u  3.4H MPa u  1.58H −86 MPa
+B B
+http://hardnesstesters.com/Applications/Brinell-Hardness-Testing.aspx
+Principle of Machine Design –Chapter 2 –Materials 24
+
+============================================================
+PAGE 25 (images: 2)
+============================================================
+Hardness: Example & Classwork
+• A part made from 1040 hot-rolled steel is to be heat treated to
+increase its strength to approximately 100 kpsi. What Brinell
+hardness number should be expected from the heat-treated part?
+S 100
+H = u = = 200 Ans
+B
+0.5 0.5
+• A steel member has a Brinell of H = 275. Estimate the ultimate
+B
+strength of this steel in MPa.
+− Ans: S = 935 MPa
+u
+Principle of Machine Design –Chapter 2 –Materials 25
+
+============================================================
+PAGE 26 (images: 3)
+============================================================
+Hardness: Classwork
+• A grey cast iron part has a brinell hardness number of H = 200.
+B
+Estimate the ultimate strength of the part in kpsi. Make a reasonable
+assessment of the likely grade of cast iron by comparing both
+hardness and strength to the material options in Table A below.
+Table A: Typical properties of grey cast iron
+•
+− Ans: S = 33.5 kpsi
+u
+ASTM No. 35 Grey cast iron
+Principle of Machine Design –Chapter 2 –Materials 26
+
+============================================================
+PAGE 27 (images: 6)
+============================================================
+Impact strength or Impact energy
+• Impact load
+– Load with application time < 1/3 of the lowest natural period of vibration of the
+object.
+– Opposite to static load.
+• Impact strength or Impact energy
+– Strength or energy to resist the impact load, unit kJ/m2
+– Can be determine by Charpy and Izod notched-bar tests.
+https://www.hera.org.nz/images/inspectionqualitycontrol/I http://polymer-filler.blogspot.com/2008/08/26-impact-
+http://www.boulder.nist.gov/div853/Charpy.htm
+mpactTesting.jpg properties.html
+Principle of Machine Design –Chapter 2 –Materials 27
+
+============================================================
+PAGE 28 (images: 4)
+============================================================
+Impact strength or Impact energy
+• Charpy and Izod methods: Comparisons
+Charpy method Izod method
+http://polymer-filler.blogspot.com/2008/08/26-impact- http://polymer-filler.blogspot.com/2008/08/26-impact-
+propeties.html propeties.html
+Specimen position Horizontal
+Vertical
+Point of strike Notch (backwards) Upper tip
+Direction of notch
+U-notch, V-notch, key hole V-notch
+Specimen dimensions 55 mm × 10 mm × 10 mm 75 mm × 10 mm × 10 mm
+Principle of Machine Design –Chapter 2 –Materials 28
+
+============================================================
+PAGE 29 (images: 3)
+============================================================
+Impact strength or Impact energy
+• Impact strength is affected by temperature.
+– For some materials, once the temperature increases, they will go through the
+brittle-ductile transition.
+– The transition temperature is called: Critical temperature
+– Critical temperature depends on many factors: material, geometry of the notch
+• Both Charpy and Izod tests provide data under dynamic condition
+– So we better use the concepts of fracture toughness and fracture mechanics to
+address the cracking.
+Principle of Machine Design –Chapter 2 –Materials 29
+
+============================================================
+PAGE 30 (images: 3)
+============================================================
+Impact strength or Impact energy
+• Rate of impact energy and strength
+– Rate of impact ≡ strain rate
+– Relation between strain-rate and strength:
+– Strain-rate ↑ → strength ↑
+– Yield strength increase faster
+than ultimate strength, and
+nearly approach.
+– But elongation is the same.
+– So ductility is about the same.
+Principle of Machine Design –Chapter 2 –Materials 30
+
+============================================================
+PAGE 31 (images: 2)
+============================================================
+Outlines
+1. Mechanical properties of materials
+– Strength, stress, and strain
+– Hardness
+– Impact strength or impact energy
+2. Materials
+– Metals
+• Forming
+• Treatment
+• Ferrous metals & non-ferrous metals
+– Ceramics
+– Polymers
+– Composite materials
+3. Material selection
+– Step
+– Property diagram
+Principle of Machine Design –Chapter 2 –Materials 31
+
+============================================================
+PAGE 32 (images: 2)
+============================================================
+Materials
+• Materials used in machine design: 3 + 1 main groups
+Metals
+– Materials which are typically hard, opaque, shiny, good electrical and thermal
+conductivity, malleable, fusible, ductile
+– 2 main groups
+Ferrous metal Non-ferrous metal
+– Metal based on iron (Fe) – Metal with no iron (Fe)
+– Usually used in a form of carbon
+alloy such as wrought iron, steel, and
+cast iron
+Ceramics Polymers Composite materials
+– Compounds of – Compounds of – Material with two or more dissimilar
+metal and non- non-metal materials
+metal
+– Chain-like – Consists of 2 types of materials
+– 3-D structure structure
+Filler Matrix
+– Include plastics
+Principle of Machine Design –Chapter 2 –Materials 32
+
+============================================================
+PAGE 33 (images: 3)
+============================================================
+Metals
+• Metals
+– Materials which are typically hard, opaque, shiny, good electrical and thermal
+conductivity, malleable, fusible, ductile
+– A big group of element: about 90 elements are metals
+Principle of Machine Design –Chapter 2 –Materials 33
+
+============================================================
+PAGE 34 (images: 2)
+============================================================
+Metal forming
+• Metal forming methods
+– Categorised by temperature: Hot and cold working processes
+Hot working processes Cold working processes
+– Forming processes during which the – Forming processes during which the
+metal is heated above its re-crystalline metal is at a low temperature
+temperature (typically room temperature)
+Clip: Hot and cold working
+By RGSS World
+https://www.youtube.com/watch?v=_xF-XMjzgtU
+Principle of Machine Design –Chapter 2 –Materials 34
+
+============================================================
+PAGE 35 (images: 2)
+============================================================
+Metal forming
+• Hot working processes
+– Forming processes during which the metal is heated above its re-crystalline
+temperature.
+– Produces refined grain structure → strength ↑, ductility ↑
+– Example: rolling, extrusion, forging
+Principle of Machine Design –Chapter 2 –Materials 35
+
+============================================================
+PAGE 36 (images: 5)
+============================================================
+Metal forming
+• Hot working processes: Rolling
+– Hot rolling
+• Used to create a bar of material with a uniform cross-sectional area including tube
+• Available materials: Steel, aluminium, magnesium, copper alloys.
+http://bsbcorp.vn/wp-content/uploads/2013/07/image4.jpg http://www.navbharatengineering.com/prd/hot-rolling-mills1.jpg
+Principle of Machine Design –Chapter 2 –Materials 36
+
+============================================================
+PAGE 37 (images: 2)
+============================================================
+Metal forming
+• Hot working processes: Rolling
+– Hot rolling
+Clip: Rolling – Industrial
+process – mechanical
+By pragathipinchi
+https://www.youtube.com/watch?v=KRn73gKQ2YU
+Principle of Machine Design –Chapter 2 –Materials 37
+
+============================================================
+PAGE 38 (images: 4)
+============================================================
+Metal forming
+• Hot working processes: Extrusion
+– Extrusion
+• Great pressure is applied to a heated metal billet so it flows through a restricted
+orifice.
+• Available materials: metal with low melting point such as aluminium, copper,
+magnesium, lead, tin, zinc.
+http://www.roymech.co.uk/images/Extrusion_direct.gif http://www.bw-plast.com/media/images/inhalt/extrusion-1-g.jpg
+Principle of Machine Design –Chapter 2 –Materials 38
+
+============================================================
+PAGE 39 (images: 2)
+============================================================
+Metal forming
+• Hot working processes: Extrusion
+– Extrusion
+Clip: 7 Hot extrusion
+By RGSS WORLD
+https://www.youtube.com/watch?v=_sIIQm-BZeU
+Clip: Hot Extrusion --
+Production Process for hot
+finished Tubes, Pipes and
+hollow bars
+By Salzgitter Mannesmann
+https://www.youtube.com/watch?v=ETz2WiX6tMI
+Principle of Machine Design –Chapter 2 –Materials 39
+
+============================================================
+PAGE 40 (images: 5)
+============================================================
+Metal forming
+• Hot working processes: Forging
+– Forging
+• Hot working by hammering, presses, or forging machining.
+• Compared to casting: greater strength, smoother and more accurate dimensions (less
+machining).
+• But forging dies are more expensive than casting die.
+http://www.kscforge.com/images/drop_forging.png
+http://hiperteknoloji.com.tr/wp-content/uploads/2015/03/forging.jpg http://mfgtalkradio.com/wp-content/uploads/2014/06/barrel_forging.jpg
+Principle of Machine Design –Chapter 2 –Materials 40
+
+============================================================
+PAGE 41 (images: 2)
+============================================================
+Metal forming
+• Hot working processes: Forging
+– Forging
+Clip: Die forging process open
+and closed die
+By RGSS WORLD
+https://www.youtube.com/watch?v=pr1Z4idd2N0
+Principle of Machine Design –Chapter 2 –Materials 41
+
+============================================================
+PAGE 42 (images: 2)
+============================================================
+Metal forming
+• Cold working processes
+– Forming processes during which the metal is at a low temperature (typically
+room temperature)
+– Processes include: rolling, drawing, extrusion, turning, grinding, polishing
+Principle of Machine Design –Chapter 2 –Materials 42
+
+============================================================
+PAGE 43 (images: 4)
+============================================================
+Metal forming
+• Cold working processes: Rolling
+– Cold rolling
+• Similar to hot rolling, but at room temperature
+• Used to create a bar of material with a uniform cross-sectional area including tube
+http://www.the- http://www.vinssco.com/UploadFiles/Image/S8002430.JPG
+warren.org/ALevelRevision/engineering/img2/coldrolling.gif
+Principle of Machine Design –Chapter 2 –Materials 43
+
+============================================================
+PAGE 44 (images: 4)
+============================================================
+Metal forming
+• Cold working processes: Drawing
+– Drawing
+• Forming process of a fix cross-sectional-area workpiece by pulling the raw material
+through a die orifice to have a smaller diameter.
+https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Bar_dr http://www.keystoneprofiles.com/images/processpull.jpg
+awing.svg/300px-Bar_drawing.svg.png
+Principle of Machine Design –Chapter 2 –Materials 44
+
+============================================================
+PAGE 45 (images: 2)
+============================================================
+Metal forming
+• Cold working processes: Extrusion
+– Extrusion
+• Similar to hot extrusion, but at room temperature
+Clip: 6 cold extrusion
+By RGSS WORLD
+https://www.youtube.com/watch?v=baG_Q73adM8
+Clip: Extrusion Processes
+By SME
+https://www.youtube.com/watch?v=Y75IQksBb0M
+Principle of Machine Design –Chapter 2 –Materials 45
+
+============================================================
+PAGE 46 (images: 3)
+============================================================
+Metal forming
+• Hot working & cold working: Comparison
+– Hot working processes
+• Grain size change – Stress-strain graph of hot and
+– Cold working process cold-worked metal
+• Grain size does not change (but distorted)
+• Yield strength ↑
+• Ultimate strength ↑
+• Hardness ↑
+• Ductility ↓
+Principle of Machine Design –Chapter 2 –Materials 46
+
+============================================================
+PAGE 47 (images: 3)
+============================================================
+Metal forming
+• Hot working & cold working: Comparison
+– Cold-worked metal: yield strength ↑ but ductility ↓ because:
+− Under cold-worked, the metal is
+first under stress to a point i (beyond
+yield strength y)
+– When the load is removed, it is
+permanently deformed (plastic
+deformation, ε)
+p
+– Now the load is reapplied, it will be
+elastically deformed by ε.
+e
+– Thus, at i, the object has total strain,
+ε= ε.+ ε.
+p e
+Principle of Machine Design –Chapter 2 –Materials 47
+
+============================================================
+PAGE 48 (images: 3)
+============================================================
+Metal forming
+• Hot working & cold working: Comparison
+– Cold-worked metal: yield strength ↑ but ductility ↓ because:
+− If the load is removed and reapplied
+for several times, the curve will be
+at a new line, nearly parallel to the
+initial line.
+− Thus ε= σ/ E.
+e i
+− So yield strength ↑ but ductility ↓
+− This is called: Strain hardening.
+− If this process is reapplied, ε will
+p
+keep increasing. Object will be more
+brittle and finally breaks.
+Principle of Machine Design –Chapter 2 –Materials 48
+
+============================================================
+PAGE 49 (images: 2)
+============================================================
+Metal treatment
+• Heat treatment
+– Process concerning heat and time to reduce stress in the metal and to change or
+modify the metal properties such as hardness, ductility, and toughness.
+– Once formed, metals, especially steel, are usually heat-treated.
+• Common heat treatment processes of steel:
+– Annealing
+– Normalising
+– Quenching
+– Tempering
+– Case hardening
+Principle of Machine Design –Chapter 2 –Materials 49
+
+============================================================
+PAGE 50 (images: 3)
+============================================================
+Metal treatment
+• Annealing
+– Process of heating the metal for a certain time above its critical temperature,
+then cooling down slowly in the furnace
+– During heated, carbon is diffused throughout the metal.
+– After heat-treated, the metal returns to its equilibrium state
+– Advantages
+• Ductility ↑ (Residual stress released)
+• Strength ↑
+Sources: https://makeitfrommetal.com/beginners-guide-on-how-to-anneal-steel/
+Principle of Machine Design –Chapter 2 –Materials 50
+
+============================================================
+PAGE 51 (images: 3)
+============================================================
+Metal treatment
+• Normalising
+– Process of heating the metal for a certain time above its critical temperature,
+then taken out to cool down in atmosphere
+– During heated, carbon is diffused throughout the metal.
+– After heat-treated, the metal returns to its equilibrium state
+– Advantages
+• Ductility ↑ (Residual stress released)
+• Strength ↑
+• Finer grain than annealing
+Sources: https://www.harchris.co.za/the-reason-metals-are-normalised-during-the-heat-treatment-process/
+Principle of Machine Design –Chapter 2 –Materials 51
+
+============================================================
+PAGE 52 (images: 3)
+============================================================
+Metal treatment
+• Quenching
+– Process of heating the metal for a certain time above its critical temperature,
+then taken out to cool down immediately in a quenching medium such as water,
+oil, or other inorganic salts or organic aqueous solutions
+− Oil quenching: Slow, can prevent
+crack caused by rapid expansion
+− Water quenching: Quicker, used for
+carbon steels, medium-carbon, low-
+alloy steel
+− Air quenching: Called mild quenching
+(similar to normalising)
+– Advantages
+• Hardness ↑ (Metal structure changed)
+• Brittleness ↑
+• Ability to withstand wear and vibration
+Sources: https://www.eltechees.com/quench-and-tempering-lines/
+Principle of Machine Design –Chapter 2 –Materials 52
+
+============================================================
+PAGE 53 (images: 3)
+============================================================
+Metal treatment
+• Tempering
+– Process of reheating the metal to a temperature below its critical temperature
+once after annealing, normalising, and (mostly) quenching
+– Advantages
+• Hardness ↓ (Residual stress released)
+• Brittleness ↓ (Residual stress released)
+– Tempering temperature depends on the material composition and the required
+hardness and toughness.
+Sources: https://www.metalsupermarkets.com/what-is-tempering/
+Principle of Machine Design –Chapter 2 –Materials 53
+
+============================================================
+PAGE 54 (images: 3)
+============================================================
+Metal treatment
+• Tempering
+– Effects of tempering
+temperature on low-alloy
+steel:
+Principle of Machine Design –Chapter 2 –Materials 54
+
+============================================================
+PAGE 55 (images: 3)
+============================================================
+Metal treatment
+• Case hardening
+– Process to increase the carbon content at the surface of the material.
+– Metal is placed into the carburising material for a specific time at a temperature
+(depending on the depth required), then quenched and tempered.
+– Advantages
+• Outer surface hardness ↑
+• Ductility and toughness in the core are not affected
+Sources: https://www.tec-science.com/material-science/heat-treatment-steel/surface-hardening-case-hardening/
+Principle of Machine Design –Chapter 2 –Materials 55
+
+============================================================
+PAGE 56 (images: 2)
+============================================================
+Metals: Ferrous metals
+• Ferrous metal
+– Metal containing a good amount of iron (Fe).
+– Often used in the form of carbon alloy (metal + carbon)
+– Categorised by amount of carbon: 3 groups
+Wrought iron Steel Cast iron
+− Least carbon − Medium carbon − High carbon
+(typically > 0.1%). (typically < 2.1%). (typically > 2.1%).
+− Purest form of iron − Most commercial form − Most impure form of
+iron
+− Highly malleable and − Separated into groups:
+ductile. − Hard and brittle
+• Mild steel: Low
+− Resist rusting and carbon, same − Cannot be welded
+properties as wrought
+corrosion.
+− Separated into groups
+iron
+− Uses: Chain, nails, regarding form of
+• Hard steel: High
+hooks, electromagnets carbon: White, grey,
+carbon, hard and brittle
+nodular, malleable,
+• Alloy steel: mixed
+alloy
+with other elements
+Principle of Machine Design –Chapter 2 –Materials 56
+
+============================================================
+PAGE 57 (images: 2)
+============================================================
+Metals: Ferrous metals
+• Ferrous metal
+– 3 main groups, according to the amount of carbon
+Wrought iron Steel Cast iron
+Composition Very low carbon Middle High carbon
+Melting point Highest Middle Lowest
+1500 °C 1300-1400 °C 1200 °C
+Hardness Cannot be hardened Can be hardened Hardest
+by heat-treatment but and tempered
+Can be hardened by
+by strain hardening
+heating and sudden
+cooling
+Compressive Lowest High & Broad range High
+strength (2 T / cm2) (4.75 – 25.2 T / cm2) (6.3 – 7.1 T / cm2)
+Tensile High High & Broad range Low
+strength (3.2 T / cm2) (5.5 – 11 T / cm2) (1.3 – 1.6 T / cm2)
+Principle of Machine Design –Chapter 2 –Materials 57
+
+============================================================
+PAGE 58 (images: 2)
+============================================================
+Metals: Ferrous metals
+• Ferrous metal
+– 3 main groups, according to the amount of carbon
+Wrought iron Steel Cast iron
+Rusting Middle Easy Difficult
+Malleable & Tough, malleable, Tough, malleable, Brittle, cannot be
+Ductility ductile, moderately ductile welded or rolled
+elastic into sheets
+Reaction to Cannot stand heavy Absorb shocks Do not absorb
+sudden shock shock shock
+Forging & Easily forged or Rapidly forged and Brittle, cannot be
+Welding welded welded welded or rolled
+into sheets
+Principle of Machine Design –Chapter 2 –Materials 58
+
+============================================================
+PAGE 59 (images: 3)
+============================================================
+Metals: Ferrous metals: Cast irons
+• Ferrous metal: Cast iron
+– Iron with high carbon content (typically > 2.1%)
+Cast iron Properties
+− Contains carbon in the form of graphite → grey
+− Mostly used
+• Especially for heavy machine (lathes, power press, screw press,
+forging machine)
+− Advantages
+• Cheap, easily cast in large quantity, easily to be machined, can absorb
+shock and vibration.
+Grey cast − Disadvantages
+iron • Brittle, weak in tension (low tensile strength), not good for welding
+(may crack)
+• But can be improved through preheat, annealing to reduce cooling
+stress and improve machinability.
+Sources: http://www.kippusa.com/us/en/Products/Knobs/Star-Grips/K0151-Star-Grips-gray-cast-iron-DIN-6336/K0151-D-Metric-Star-Grips-gray-cast-iron-DIN-6336-Style-D-metric.html
+Principle of Machine Design –Chapter 2 –Materials 59
+
+============================================================
+PAGE 60 (images: 3)
+============================================================
+Metals: Ferrous metals: Cast irons
+• Ferrous metal: Cast iron
+– Iron with high carbon content (typically > 2.1%)
+Cast iron Properties
+− Contains carbon in the forms of cementite and pearlite → white
+− % Carbon < that in grey cast iron.
+− Made by controlling the carbon and silicon content low.
+− Advantage
+• Very resistance to wear
+− Disadvantage
+White cast
+• Very brittle, hard to machine, require annealing to soften.
+iron
+Sources: http://www.exportersindia.com/ci-metal-casting/white-cast-iron-castings-yamunanagar-india-456436.htm
+Principle of Machine Design –Chapter 2 –Materials 60
+
+============================================================
+PAGE 61 (images: 3)
+============================================================
+Metals: Ferrous metals: Cast irons
+• Ferrous metal: Cast iron
+– Iron with high carbon content (typically > 2.1%)
+Cast iron Properties
+− Obtained when annealing a white cast iron.
+− Contain carbon in graphite in the form called nodular (different
+from that in the grey one).
+− Advantages
+• Good tensile strength and elongation, soft, easily for machining
+− Disadvantages:
+• Need long time to anneal (50 – 150 hrs)
+Malleable
+• Expensive than grey cast iron.
+cast iron
+Sources: http://i01.i.aliimg.com/img/pb/209/828/761/761828209_347.jpg
+Principle of Machine Design –Chapter 2 –Materials 61
+
+============================================================
+PAGE 62 (images: 3)
+============================================================
+Metals: Ferrous metals: Cast irons
+• Ferrous metal: Cast iron
+– Iron with high carbon content (typically > 2.1%)
+Cast iron Properties
+− Made by adding MgFeSi to the melt iron.
+− Become malleable but require shorter annealing time.
+− High Young modulus compared to grey.
+− Obey Hooke’s law (grey cast iron does not)
+− Extensive used.
+Ductile and
+nodular cast
+iron
+http://www.metals-
+china.com/comparison-of-nodular-
+cast-iron-and-cast-iron-cast-steel.html
+Principle of Machine Design –Chapter 2 –Materials 62
+
+============================================================
+PAGE 63 (images: 2)
+============================================================
+Metals: Ferrous metals: Steels
+• Ferrous metal: Steel
+– Iron with medium carbon content (typically < 2.1%)
+– Usually used in a form of Alloy steel
+• Alloy steel
+– Steel with contents of other elements
+– Purposes including
+• Better ductility
+• Increase tensile and compressive strength without decreasing the ductility.
+• Can be heat-treated.
+• Increase wear resistance
+• Increase corrosion resistance
+• Can be operated at high temperature
+• Grain size can be controlled
+Principle of Machine Design –Chapter 2 –Materials 63
+
+============================================================
+PAGE 64 (images: 3)
+============================================================
+Metals: Ferrous metals: Steels
+• Ferrous metal: Alloy steel
+– Steel with contents of other elements
+Element Alloy steel properties
+− More strength without decreasing ductility.
+Nickel − Used in case-hardening for better core.
+Ni − Combined with chromium for better toughness
+and ductility (from Ni) and hardness (from Cr)
+http://www.shantimetalind.com/roun
+d-bar-nickel-alloy--367864.html
+− Deoxidising and desulfurising agent.
+Manganese
+− Increase the time for crystalisation, making oil quenching
+Mn
+practicable
+Principle of Machine Design –Chapter 2 –Materials 64
+
+============================================================
+PAGE 65 (images: 2)
+============================================================
+Metals: Ferrous metals: Steels
+• Ferrous metal: Alloy steel
+– Steel with contents of other elements
+Element Alloy steel properties
+− Deoxidising agent
+− When added to low-carbon steel, it becomes brittle with low
+Silicon
+hysteresis loss and high magnetic permeability
+Si
+− Typically used with other alloy elements
+− Also used in electric component, such as core in transformers
+Molybdenu − Increase hardness and toughness through a fine grain size
+m − Make steel more applicable in oil hardening and air hardening.
+Mo − Apart from carbon, provide greatest hardening effect
+− Increase hardness and toughness
+Vanadium
+− Alloy can be hardened at higher temperature
+V
+− Used in tool steels
+− Increase hardness and toughness
+Tungsten
+− Similar effects to molybdenum, but less extent
+W
+− Used in tool steels as it will maintain hardness even at high heat
+Principle of Machine Design –Chapter 2 –Materials 65
+
+============================================================
+PAGE 66 (images: 2)
+============================================================
+Metals: Ferrous metals: Steels
+• Ferrous metal: Alloy steel
+– Steel with contents of other elements
+Element Alloy steel properties
+− More ductilility
+− More hardness and toughness due to increase in carbon content
+and refine grain structure
+− Expensive
+Stainless steel
+Chromium
+− Steel with >12% of chromium
+Cr
+− Resist corrosive conditions. More Cr → more resistance
+− Cr < 12%, steel still exhibits corrosion
+− Cr > 18%, steel is too hard and difficult to weld
+− Cold working increase strength and magnetic
+− With Ni, steels may be welded, and more corrosive resistant than
+plain Cr.
+Principle of Machine Design –Chapter 2 –Materials 66
+
+============================================================
+PAGE 67 (images: 2)
+============================================================
+Metals: Ferrous metals: Steels
+• Ferrous metal: Alloy steel
+– Usage: High-speed steel, hot-work tool steel, and cold-work tool steel
+High-speed steel Hot-work tool steel Cold-work tool steel
+(Cr, W, Mo, V)
+– Used especially for (Cr, W, Mo, Co)
+cutting tools – Used to work at high
+– Most widely used,
+temperature (may reach
+– Example: milling because can work at
+450 °C)
+cutters, saw blades, room temperature
+blanking die – Example: hot-extrusion
+– Example: blanking dies,
+dies, hot shear blades,
+– Hardened and tempered trimming dies, forming
+die casting dies, plastic
+to have high hardness and embossing dies,
+molding dies, hot
+coining dies, taps and
+– Still hard and wear-
+forging dies
+dies, drawing dies,
+resistive at high
+– High resistance to wear, shear blades
+temperature
+corrosion, and crack
+– 2 main groups:
+Tungsten and
+molybdenum (cheaper)
+Principle of Machine Design –Chapter 2 –Materials 67
+
+============================================================
+PAGE 68 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Non-ferrous metal
+– Metal with no iron (Fe)
+– Example: Aluminium, magnesium, titanium, and copper
+• Aluminium
+Advantages Disadvantages
+− Great strength-to-weight ratio (i.e. − Less ultimate tensile strength than steel
+light but strong) (but can be improved by cold working
+− Resistance to corrosion or by alloying)
+(depends on thin oxide coating, − 1/3 stiffness of steel
+produced by anodising, can also − Difficult to soldering, brazing, or
+control the colour of metal) welding
+− High thermal and electrical
+conductivity
+− Can be processed by many methods
+− Low melting point: good for casting
+− Available commercially in many forms
+Principle of Machine Design –Chapter 2 –Materials 68
+
+============================================================
+PAGE 69 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Aluminium alloy
+– Alloy with mostly copper, silicon, manganese, magnesium, zinc
+– 2 groups: casting alloys and wrought alloys
+Casting alloys Wrought alloys
+− Greater percentages of alloying − Some cannot be hardened by heat
+element: help casting. treatment, but can be harden by cold
+− But more difficult to cold work. working.
+− Many cannot be hardened by heat
+treatment, but can be harden by cold
+working.
+– Some are heat-treatable: such as duraluminium (code 2017) (harden 4 days at
+RT) or material code 5053.
+– Both hardening through coldworking and heat treatment may be removed by
+an annealing process.
+Principle of Machine Design –Chapter 2 –Materials 69
+
+============================================================
+PAGE 70 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Magnesium
+Advantages Disadvantages
+− Lightest of all commercial materials. − No great strength (due to light-weight).
+Weigh ¼ of steel. − Not good to use at high temp (>100
+Used in aircraft and automotive and °C) as yield point reduced.
+application where strength is not an − Cold working reduce the Young’s
+important factor. modulus.
+− Magnesium alloys are available.
+− In some alloys, Young’s modulus in tension is stronger than that in compression.
+Principle of Machine Design –Chapter 2 –Materials 70
+
+============================================================
+PAGE 71 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Titanium
+Advantages Disadvantages
+− As strong as moderate-strength steel, − Expensive (compared to steel and
+but weigh ½ of that. aluminium).
+− Good corrosive resistance. − Difficult machinability.
+− Low thermal conductivity.
+− Nonmagnetic.
+− High-temperature strength.
+− Applications: aerospace and aircraft structures and components, marine
+hardware, chemical tanks and processing equipment, fluid handling systems,
+human internal replacement devices
+Principle of Machine Design –Chapter 2 –Materials 71
+
+============================================================
+PAGE 72 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Copper
+– Usually used in alloy forms. 2 main alloys: brass & bronze
+Brass Bronze
+– Alloy of copper + zinc – Alloy of copper + other materials
+such as silicon, phosphor,
+– Can be categorised depending on
+aluminium, beryllium
+percentage of zinc
+Principle of Machine Design –Chapter 2 –Materials 72
+
+============================================================
+PAGE 73 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Brass
+– Metal alloy of copper + zinc
+– Can be categorised depending on percentage of zinc: Low, medium, and high
+• Brass with low zinc (5-15%)
+Advantages Disadvantages
+− Easy to cold work, ductile, good corrosive − Hard to machine
+resistance
+– Separated into sub-groups depending on percentage of zinc
+Gilding brass Commercial bronze Red brass
+(5% Zn) (10% Zn) (15% Zn)
+• Same ductility as copper • Good ductility and cold • Good corrosion resistance
+but greater strength, poor working properties but and high temp strength.
+machinability. Used in poor machinability. Used Used in tubing or piping
+jewelry in jewelry and forging of hot water in radiators or
+condensers
+Principle of Machine Design –Chapter 2 –Materials 73
+
+============================================================
+PAGE 74 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Brass with medium zinc (20-36%)
+Advantages Disadvantages
+− Cheaper than low zinc (as zinc is cheaper) − Poor corrosion resistance
+than copper − May crack at points of residual stress
+− Better machinability
+− Slightly greater strength
+– Several types such as
+• Low brass (20% Zn): Similar to red brass. Used in deep-draw objects.
+• Cartridge brass (30% Zn): Best combination of ductility and strength among brass.
+Originally processed by a series of deep draw
+• Yellow brass (35% Zn): Can be fabricated in many processes, giving a variety of
+products. Poor hot-working ability though
+• Leaded-brass: Contain Pb. Improve machinability and hot-working, but less cold
+working and welding properties
+• Admiralty metal (28% Zn + 1% tin): Excellent corrosion resistance especially to
+saltwater. Good strength ductility. For machining and working characteristics. Used in
+powerplant and chemical equipment
+• Aluminium brass (22% Zn + 2% Al): Similar properties to admiralty metal
+Principle of Machine Design –Chapter 2 –Materials 74
+
+============================================================
+PAGE 75 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Brass with high zinc (36-40%)
+– Less ductile than cartridge and cannot be cold-worked severely; usually hot
+work (extrusion).
+– Several types such as
+• Muntz metal (40% zn): Cheap and mildy corrosion resistance.
+• Naval brass (40% Zn + 0.75% tin): Better corrosion resistance.
+Principle of Machine Design –Chapter 2 –Materials 75
+
+============================================================
+PAGE 76 (images: 2)
+============================================================
+Metals: Non-ferrous metals
+• Bronze
+– Metal alloy of copper + other materials such as phosphor, beryllium, aluminium,
+and silicon
+Phosphor bronze Beryllium bronze
+• Good resistance to fatigue, corrosion, and • Very corrosion resistance, high strength,
+wear. High tensile strength and ability to hardness, and wear resistance, but
+absorb energy. expensive
+• Good for making springs.
+Aluminium bronze Silicon bronze
+• Better strength and corrosion resistance • Similar mechanical properties to those of
+than brass. Properties depend on cold- mild steel.
+working, heat treatment, or composition.
+• Can be hot and cold worked, machined,
+• With iron, the alloy has good shock welded.
+resistance and wear resistance.
+• Good for work where corrosion resistance
+and strength are required.
+Principle of Machine Design –Chapter 2 –Materials 76
+
+============================================================
+PAGE 77 (images: 3)
+============================================================
+Ceramics
+• Ceramics
+– Inorganic compounds of metal and non-metal
+• Elements are linked by covalent and ionic bonds
+Stronger than metallic bonds
+→ hardness ↑, stiffness ↑, ductility ↓, melting point ↑
+• No share electron → Not electrically and thermally conductive
+• May be crystalline or amorphous (glassy)
+Source: https://www.nde-ed.org
+Principle of Machine Design –Chapter 2 –Materials 77
+
+============================================================
+PAGE 78 (images: 6)
+============================================================
+Ceramics
+• 3 categories of ceramics: Traditional ceramics, new ceramics, glasses
+Traditional ceramics
+– Natural ceramics or ancient synthesised ceramics
+Natural silicates Silica (SiO , quartz)
+2
+(compounds of Si and O, such as clay)
+− Used for pottery, brick, tile
+− Used for pottery
+Alumina (aluminium oxide, Al O ) Silicon carbide (SiC)
+2 3
+– Used for abrasive – Used for abrasive
+Sources: https://www.911metallurgist.com, https://en.wikipedia.org/wiki/Silica_gel, https://en.wikipedia.org/wiki/Aluminium_oxide, https://compomat.com/silicon-carbide/
+Principle of Machine Design –Chapter 2 –Materials 78
+
+============================================================
+PAGE 79 (images: 4)
+============================================================
+Ceramics
+• 3 categories of ceramics: Traditional ceramics, new ceramics, glasses
+New ceramics
+– Newly synthesised ceramics (within several decades); examples:
+Oxide ceramics Carbides
+− Such as alumina − Carbon compounds, such as SiC, WC, TiC, TaC, Cr C
+3 2
+− Used as abrasives, − Hard, wear resistive, chemically stable, oxidation
+electrical insulators, resistive
+cutting tools
+− Used as machine tools
+Nitrides
+− Nitrogen compounds, such as Si3N4, BN, TiN
+− Hard, brittle, high melting points,
+usually electrically insulating (Except TiN)
+− Used as cutting tools (BN), coating (TiN)
+Sources: https://www.gasweld.ie, http://toolorbit.in
+Principle of Machine Design –Chapter 2 –Materials 79
+
+============================================================
+PAGE 80 (images: 2)
+============================================================
+Ceramics
+• 3 categories of ceramics: Traditional ceramics, new ceramics, glasses
+Glasses
+– Inorganic, nonmetallic compound which cools without crystallising
+– Main ingredient: silica (SiO ) (50%–75%), due to its best glass forming property
+2
+– Additional ingredients including
+Magnesia (MgO) Lime (CaO)
+− Reduce vitrification − Increase fluidity
+− Reduce vitrification
+Soda (Na O )
+2 3
+− Increase chemical stability
+Boric oxide (B O )
+− Reduce chemical solubility 2 3
+− Lower thermal expansion coefficient
+Lead oxide (PbO) (‘Pyrex’ glass)
+− High refractive index (‘flint’ glass, (‘Vicor’ glass = high silica glass, also
+opposite to ‘crown glass’, glass with low thermal expansion coefficient)
+high refractive index)
+Principle of Machine Design –Chapter 2 –Materials 80
+
+============================================================
+PAGE 81 (images: 2)
+============================================================
+Polymers
+• Polymers
+− Compounds of small repeated structural units called mers
+− Several types including: plastics, elastomers (rubbers), natural polymers (DNA,
+cellulose)
+• Plastics
+− Compounds of long chain of polymers
+(all plastics are polymers, but polymers may not be plastics)
+− Cover wide ranges of properties: cost, moldability, friction coefficient, plasticity
+− Can be classified by their remoldability: thermoplastic & thermoset
+Thermoplastic Thermosets
+− Plastic that can be molded and − Plastic which cannot be remolded as
+remolded when heated the polimerisation process is finished
+in a hot molding process where the
+plastic is liquefied under pressure
+Principle of Machine Design –Chapter 2 –Materials 81
+
+============================================================
+PAGE 82 (images: 2)
+============================================================
+Plastics
+• Plastics
+− Categorised by their remoldability: thermoplastic & thermoset
+Thermoplastic
+− Plastic that can be molded (softened) and remolded when heated.
+− Most widely used.
+− Can be recycled because there is no change in molecular structure
+− Examples
+• Acrylic resin • Fluoropolymers, TEFLON
+• Polyethylene, PE • Polyamide, nylon
+• Polypropylene, PP
+• Polycarbonate, PC
+• Polyethylene terephalate, PET
+• Polystylene, PS
+• Polyvinyl chloride, PVC
+• Acrylonitril butadiene styrene, ABS
+• Celluloid
+• Polyurethane
+• Cellulose acetate
+• Cellulose acetate butyrate
+Principle of Machine Design –Chapter 2 –Materials 82
+
+============================================================
+PAGE 83 (images: 2)
+============================================================
+Plastics
+• Plastics
+− Categorised by their remoldability: thermoplastic & thermoset
+Thermoset
+− Plastic which cannot be remolded as the polimerisation process is finished in a hot
+molding process where the plastic is liquefied under pressure.
+− Molecular bonds are very strong
+− Very hard, have good resistance to heat and chemical reaction.
+− If heated again will not change shape but will be burnt (at high temp)
+− Examples
+• Phenolic plastic: Composed of phenol and formaldehyde. Use: Lighters, buttons,
+utensils
+• Urea plastic: Transparent, hard. Use: screw caps, electrical insulation components,
+adhesive
+• Melamine plastic: High heat resistance. Use: food container.
+• Epoxy: Good bonding properties. Use: cheap tools such as dies, bonding, lamination
+• Polyester
+• Polyurethane
+Principle of Machine Design –Chapter 2 –Materials 83
+
+============================================================
+PAGE 84 (images: 3)
+============================================================
+Composite materials
+• Composite materials
+– Material formed from two or more dissimilar materials with different properties
+– Most consist of 2 materials: Filler and matrix
+Matrix
+Filler
+− Discontinuous reinforcement − Hold filler together
+− Stiff and strong − Transfer load to filler
+− Give different properties in different − Typically plastic resins.
+direction
+− Filler is discontinuous
+• Composite material has different properties in different direction: need multiple plies.
+− Properties can be varied
+Some are 5 times strength-to-weight ratio greater than steel,
+8 times stiffness-to-weight ratio greater than metals
+− Used in automotive, marine, aircraft, spacecraft, where weight is concerned
+Sources: https://mechanicalbase.com/explanation-of-components-and-classification-of-composite-materials/
+Principle of Machine Design –Chapter 2 –Materials 84
+
+============================================================
+PAGE 85 (images: 4)
+============================================================
+Composite materials
+• Composite material
+Principle of Machine Design –Chapter 2 –Materials 85
+
+============================================================
+PAGE 86 (images: 2)
+============================================================
+Outlines
+1. Mechanical properties of materials
+– Strength, stress, and strain
+– Hardness
+– Impact strength or impact energy
+2. Materials
+– Metals
+• Forming
+• Treatment
+• Ferrous metals & non-ferrous metals
+– Ceramics
+– Polymers
+– Composite materials
+3. Material selection
+– Step
+– Property diagram
+Principle of Machine Design –Chapter 2 –Materials 86
+
+============================================================
+PAGE 87 (images: 2)
+============================================================
+Material selection
+• Material selection: Step
+Step 1
+List & prioritise
+all required properties
+Step 2
+For each property,
+list & prioritise
+all available materials
+Step 3
+Select material which
+appears in all properties
+Principle of Machine Design –Chapter 2 –Materials 87
+
+============================================================
+PAGE 88 (images: 3)
+============================================================
+Material selection
+• Material selection: Summary of materials
+– Metals
+Principle of Machine Design –Chapter 2 –Materials 88
+
+============================================================
+PAGE 89 (images: 5)
+============================================================
+Material selection
+• Material selection: Summary of materials
+– Ceramics
+– Glass
+Principle of Machine Design –Chapter 2 –Materials 89
+
+============================================================
+PAGE 90 (images: 3)
+============================================================
+Material selection
+• Material selection: Summary of materials
+– Polymers: Thermoplastics & thermosets
+Principle of Machine Design –Chapter 2 –Materials 90
+
+============================================================
+PAGE 91 (images: 4)
+============================================================
+Material selection
+• Material selection: Summary of materials
+– Elastomers
+− Hybrid: Composite, foam, natural materials
+Principle of Machine Design –Chapter 2 –Materials 91
+
+============================================================
+PAGE 92 (images: 3)
+============================================================
+Material selection
+• Property diagram: Young’s modulus
+Principle of Machine Design –Chapter 2 –Materials 92
+
+============================================================
+PAGE 93 (images: 3)
+============================================================
+Material selection
+• Property diagram: Density – Young’s modulus
+Principle of Machine Design –Chapter 2 –Materials 93
+
+============================================================
+PAGE 94 (images: 3)
+============================================================
+Material selection
+• Property diagram: Density - Strength
+Principle of Machine Design –Chapter 2 –Materials 94
+
+============================================================
+PAGE 95 (images: 2)
+============================================================
+• Bibliography
+– R.G. Budynas, J. K. Nisbett: Shigley’s Mechanical Engineering Design, 9th
+Edition, McGraw-Hill, New York. United States, 2011.
+• Practice problems
+– R.G. Budynas, J. K. Nisbett: Shigley’s Mechanical Engineering Design, 9th
+Edition, McGraw-Hill, New York. United States, 2011.
+– Chapter 2: Problems 2-01 to 2-34
+Principle of Machine Design –Chapter 2 –Materials 95
+
+============================================================
+PAGE 96 (images: 2)
+============================================================
+Thank you
+Principle of Machine Design –Chapter 2 –Materials 96

@@ -1,142 +1,122 @@
-"""Export study materials: Anki TSV, HTML quiz, markdown summaries, NotebookLM source pack."""
-import html
-import re
+"""Export generated study materials to various formats."""
+import logging
 from pathlib import Path
 
-from rich.console import Console
+from .config import cfg
+from .generate import Flashcard, QuizQuestion, Summary
 
-from .generate import Concept, Flashcard, QuizQuestion, Summary
-
-console = Console()
+logger = logging.getLogger(__name__)
 
 
 def write_anki(cards: list[Flashcard], path: Path) -> None:
-    with open(path, "w", encoding="utf-8") as f:
-        f.write("#separator:tab\n#html:true\n#tags column:4\n")
-        for c in cards:
-            f.write(c.to_anki() + "\tlearnforge\n")
-    console.print(f"[green]Anki deck -> {path}[/green]  (import into Anki: File > Import)")
+    """Write flashcards as a TSV file for Anki import."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [card.to_anki() for card in cards]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    logger.info(f"Wrote {len(cards)} flashcards to {path}")
 
 
 def write_quiz(questions: list[QuizQuestion], path: Path) -> None:
-    rows = []
+    """Write quiz questions as an HTML file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    html_parts = [
+        "<!DOCTYPE html>",
+        "<html><head><meta charset='utf-8'><title>Quiz</title>",
+        "<style>",
+        "body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 20px}",
+        ".q{background:#f8f9fa;border-radius:8px;padding:16px;margin:16px 0}",
+        ".opt{margin:4px 0}",
+        ".exp{display:none;background:#e8f5e9;padding:8px;border-radius:4px;margin-top:8px}",
+        "button{background:#1976d2;color:#fff;border:0;padding:6px 12px;border-radius:4px;cursor:pointer}",
+        "</style></head><body>",
+        "<h1>Practice Quiz</h1>",
+    ]
     for i, q in enumerate(questions, 1):
-        opts = "".join(
-            f'<label class="opt"><input type="radio" name="q{i}" value="{j}">'
-            f"{html.escape(o)}</label>"
-            for j, o in enumerate(q.options)
+        html_parts.append(f"<div class='q'><p><strong>Q{i}. {q.question}</strong></p>")
+        for j, opt in enumerate(q.options):
+            html_parts.append(f"<div class='opt'>{chr(65+j)}. {opt}</div>")
+        html_parts.append(
+            f"<button onclick=\"this.nextElementSibling.style.display='block'\">Show Answer</button>"
         )
-        rows.append(
-            f"<div class='q' data-answer='{q.answer_index}'>"
-            f"<p><b>{i}. {html.escape(q.question)}</b></p>{opts}"
-            f"<p class='expl'>{html.escape(q.explanation)}</p></div>"
+        html_parts.append(
+            f"<div class='exp'><strong>Answer: {chr(65+q.answer_index)}</strong><br>{q.explanation}</div>"
         )
-    page = f"""<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<title>Practice Quiz</title>
-<style>
-body{{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;color:#222}}
-.q{{border-bottom:1px solid #ddd;padding:1rem 0}}
-.opt{{display:block;margin:.3rem 0;padding:.4rem;border:1px solid #ddd;border-radius:6px;cursor:pointer}}
-.opt:hover{{background:#f5f5f5}}
-.expl{{display:none;color:#0a5}}
-.correct{{background:#d4edda!important;border-color:#8fd19e}}
-.wrong{{background:#f8d7da!important;border-color:#f1aeb5}}
-button{{margin:1.5rem 0;padding:.7rem 1.4rem;font-size:1rem;border:none;border-radius:8px;background:#0a5;color:#fff;cursor:pointer}}
-#score{{font-weight:bold;font-size:1.1rem}}
-</style></head><body><h1>Practice Quiz</h1>
-{''.join(rows)}
-<button onclick="grade()">Grade my answers</button><div id="score"></div>
-<script>
-function grade(){{let score=0,total=0;document.querySelectorAll('.q').forEach(q=>{{
-total++;const sel=q.querySelector('input:checked');
-const expl=q.querySelector('.expl');
-if(sel){{const ok=+sel.value===+q.dataset.answer;
-score+=ok?1:0;sel.parentElement.classList.add(ok?'correct':'wrong');
-if(!ok){{const r=q.querySelectorAll('input')[q.dataset.answer];r.parentElement.classList.add('correct');}}}}
-expl.style.display='block';}});
-document.getElementById('score').textContent=`You scored ${{score}} / ${{total}}`;}}
-</script></body></html>"""
-    path.write_text(page, encoding="utf-8")
-    console.print(f"[green]Quiz -> {path}[/green]  (open in your browser)")
+        html_parts.append("</div>")
+    html_parts.append("</body></html>")
+    path.write_text("\n".join(html_parts), encoding="utf-8")
+    logger.info(f"Wrote {len(questions)} quiz questions to {path}")
 
 
 def write_summaries(summaries: list[Summary], path: Path) -> None:
-    lines = [f"# Study Summaries ({len(summaries)} chunks)", ""]
+    """Write summaries as a Markdown file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    parts = ["# Summaries\n"]
     for s in summaries:
-        lines += [f"## {s.title}", "", s.summary, "", "**Key points:**"]
-        lines += [f"- {p}" for p in s.key_points]
-        lines += ["", f"**Analogy:** {s.analogy}", "", "**Test yourself:**"]
-        lines += [f"- {q}" for q in s.questions_to_test_yourself]
-        lines += ["", "---", ""]
-    path.write_text("\n".join(lines), encoding="utf-8")
-    console.print(f"[green]Summaries -> {path}[/green]")
+        parts.append(f"## {s.title}\n")
+        parts.append(f"{s.summary}\n")
+        if s.key_points:
+            parts.append("**Key Points:**")
+            for kp in s.key_points:
+                parts.append(f"- {kp}")
+            parts.append("")
+        if s.analogy:
+            parts.append(f"**Analogy:** {s.analogy}\n")
+        if s.questions_to_test_yourself:
+            parts.append("**Test Yourself:**")
+            for q in s.questions_to_test_yourself:
+                parts.append(f"- {q}")
+            parts.append("")
+    path.write_text("\n".join(parts), encoding="utf-8")
+    logger.info(f"Wrote {len(summaries)} summaries to {path}")
 
 
-def write_notebooklm_pack(summaries: list[Summary], path: Path) -> None:
-    """One text file per chunk, plus a master prompt file. Drop these into NotebookLM."""
-    pack = path / "notebooklm_sources"
-    pack.mkdir(parents=True, exist_ok=True)
-    master = []
-    for s in summaries:
-        fname = f"{path.name}_{summaries.index(s) + 1}.md".replace(" ", "_")
-        (pack / fname).write_text(
-            f"# {s.title}\n\n{s.summary}\n\n{s.notebooklm_prompt}\n", encoding="utf-8"
+def write_notebooklm_pack(summaries: list[Summary], output_dir: Path) -> None:
+    """Write a NotebookLM source pack (per-chunk text + master prompt)."""
+    pack_dir = output_dir / "notebooklm_pack"
+    pack_dir.mkdir(parents=True, exist_ok=True)
+    for i, s in enumerate(summaries):
+        text_path = pack_dir / f"chunk_{i:03d}.txt"
+        text_path.write_text(
+            f"# {s.title}\n\n{s.summary}\n\n"
+            + "\n".join(f"- {kp}" for kp in s.key_points) + "\n",
+            encoding="utf-8",
         )
-        master.append(f"- {fname}: {s.summary}")
-    (pack / "_master_prompt.md").write_text(
-        "# Upload the files in this folder to NotebookLM as sources, then:\n"
-        "1. Ask questions about the material.\n"
-        "2. Generate an Audio Overview (it will sound like a podcast).\n"
-        "3. Ask it to quiz you in a chat.\n\n" + "\n".join(master),
+    master = pack_dir / "_master_prompt.md"
+    prompts = [s.notebooklm_prompt for s in summaries if s.notebooklm_prompt]
+    master.write_text(
+        "# NotebookLM Source Pack\n\n"
+        + "Use these prompts to generate an audio overview for each chunk:\n\n"
+        + "\n\n".join(f"## Chunk {i}\n{p}" for i, p in enumerate(prompts)),
         encoding="utf-8",
     )
-    console.print(f"[green]NotebookLM pack -> {pack}[/green]")
+    logger.info(f"Wrote NotebookLM pack to {pack_dir}")
 
 
-def _slugify(value: str) -> str:
-    value = re.sub(r"[^a-zA-Z0-9\s-]", "", value.lower()).strip()
-    return re.sub(r"\s+", "-", value)
-
-
-def write_vault_bundle(summaries: list[Summary], concepts: list[Concept], root: Path) -> None:
-    """Write a cleaned, vault-friendly bundle under a root folder.
-
-    Structure:
-      root/01_Active_Outputs/summary.md
-      root/03_Concepts/concept.md
-    """
-    root.mkdir(parents=True, exist_ok=True)
-    out_dir = root / "01_Active_Outputs"
-    concept_dir = root / "03_Concepts"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    concept_dir.mkdir(parents=True, exist_ok=True)
-
+def write_vault_bundle(summaries: list[Summary], concepts: list, vault_dir: Path) -> None:
+    """Write summaries and concepts to a vault directory structure."""
+    # Write summaries
+    outputs_dir = vault_dir / "01_Active_Outputs"
+    outputs_dir.mkdir(parents=True, exist_ok=True)
     for s in summaries:
-        slug = _slugify(s.title) or "summary"
-        summary_path = out_dir / f"{slug}.md"
-        key_points = "\n".join(f"- {p}" for p in s.key_points)
-        test_qs = "\n".join(f"- {q}" for q in s.questions_to_test_yourself)
-        summary_path.write_text(
-            "# " + s.title + "\n\n"
-            + s.summary + "\n\n"
-            + "## Key points\n" + key_points + "\n\n"
-            + "## Analogy\n" + s.analogy + "\n\n"
-            + "## Test yourself\n" + test_qs + "\n\n"
-            + "## NotebookLM prompt\n" + s.notebooklm_prompt + "\n",
+        slug = s.title.lower().replace(" ", "_").replace("-", "_")
+        summary_file = outputs_dir / f"{slug}.md"
+        summary_file.write_text(
+            f"# {s.title}\n\n{s.summary}\n\n"
+            + "\n".join(f"- {kp}" for kp in s.key_points) + "\n",
             encoding="utf-8",
         )
 
+    # Write concepts
+    concepts_dir = vault_dir / "03_Concepts"
+    concepts_dir.mkdir(parents=True, exist_ok=True)
     for c in concepts:
-        concept_path = concept_dir / f"{_slugify(c.name) or 'concept'}.md"
-        related = "\n".join(f"- {term}" for term in c.related_terms)
-        concept_body = (
-            f"# {c.name}\n\n"
-            f"**Definition:** {c.definition}\n\n"
-            f"**Confidence:** {c.confidence:.2f}\n\n"
-            f"**Related terms:**\n{related or '- none'}\n\n"
-            f"**Source:** {c.source or 'unknown'}\n"
+        slug = c.name.lower().replace(" ", "_").replace("-", "_")
+        concept_file = concepts_dir / f"{slug}.md"
+        concept_file.write_text(
+            f"# {c.name}\n\n{c.definition}\n\n"
+            f"**Related:** {', '.join(c.related_terms)}\n\n"
+            f"**Confidence:** {c.confidence}\n\n"
+            f"**Source:** {c.source}\n",
+            encoding="utf-8",
         )
-        concept_path.write_text(concept_body, encoding="utf-8")
-
-    console.print(f"[green]Vault bundle -> {root}[/green]")
+    logger.info(f"Wrote vault bundle to {vault_dir}")

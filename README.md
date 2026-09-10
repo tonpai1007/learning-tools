@@ -16,6 +16,7 @@ It is designed to support a simple workflow:
 - Summary notes with key ideas and self-tests
 - NotebookLM-ready source packs
 - A local, conversational tutor over your material
+- Exam-focused study guides (concepts, formulas, worked examples, practice problems)
 - SRS tracking for spaced repetition
 
 ## Setup
@@ -43,6 +44,7 @@ python -m lt sample
 python -m lt all
 python -m lt quiz
 python -m lt summarize
+python -m lt study-guide
 python -m lt tutor
 python -m lt review
 python -m lt stats

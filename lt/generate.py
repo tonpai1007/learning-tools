@@ -1,14 +1,21 @@
-"""Generate study materials (cards, quizzes, summaries) from chunks."""
+"""Generate study materials (cards, quizzes, summaries) from chunks.
+
+Supports parallel API calls and progress tracking.
+"""
 import json
+import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from rich.console import Console
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
 
 from . import ai
 from .chunker import Chunk
 
 console = Console()
+logger = logging.getLogger(__name__)
 
 FLASHCARD_SYSTEM = (
     "You extract factual knowledge from study material. "
@@ -84,72 +91,279 @@ def _batched(chunks, n):
         yield chunks[i:i + n]
 
 
-def generate_flashcards(chunks, per_chunk=6, progress=True) -> list[Flashcard]:
-    cards, failed = [], 0
-    for chunk in chunks:
-        n = per_chunk
-        prompt = (
-            f"Generate exactly {n} flashcards from this study material.\n\n"
-            f"SOURCE: {chunk.source} (part {chunk.index})\n{chunk.text[:6000]}"
+def _generate_flashcards_for_chunk(chunk: Chunk, per_chunk: int) -> list[Flashcard]:
+    """Generate flashcards for a single chunk. Returns list of Flashcard."""
+    n = per_chunk
+    prompt = (
+        f"Generate exactly {n} flashcards from this study material.\n\n"
+        f"SOURCE: {chunk.source} (part {chunk.index})\n{chunk.text[:6000]}"
+    )
+    try:
+        data = ai.extract_json(ai.complete(prompt, system=FLASHCARD_SYSTEM, temperature=0.4))
+        if isinstance(data, dict):
+            data = [data]
+        cards = []
+        for item in data[:n]:
+            cards.append(Flashcard(item["question"], item["answer"], item.get("hint", "")))
+        return cards
+    except Exception as e:  # noqa: BLE001
+        logger.warning(f"Flashcard generation failed for {chunk.source}#{chunk.index}: {e}")
+        return []
+
+
+def _generate_quiz_for_chunk(chunk: Chunk, per_chunk: int) -> list[QuizQuestion]:
+    """Generate quiz questions for a single chunk. Returns list of QuizQuestion."""
+    prompt = (
+        f"Write exactly {per_chunk} quiz questions from this study material.\n\n"
+        f"SOURCE: {chunk.source} (part {chunk.index})\n{chunk.text[:6000]}"
+    )
+    try:
+        data = ai.extract_json(ai.complete(prompt, system=QUIZ_SYSTEM, temperature=0.5))
+        if isinstance(data, dict):
+            data = [data]
+        questions = []
+        for item in data[:per_chunk]:
+            questions.append(QuizQuestion(
+                item["question"], item["options"], item["answer_index"], item.get("explanation", "")
+            ))
+        return questions
+    except Exception as e:  # noqa: BLE001
+        logger.warning(f"Quiz generation failed for {chunk.source}#{chunk.index}: {e}")
+        return []
+
+
+def _generate_summary_for_chunk(chunk: Chunk) -> Summary | None:
+    """Generate summary for a single chunk. Returns Summary or None."""
+    prompt = f"Summarize this study material for learning.\n\nSOURCE: {chunk.source} (part {chunk.index})\n{chunk.text[:6000]}"
+    try:
+        data = ai.extract_json(ai.complete(prompt, system=SUMMARY_SYSTEM, temperature=0.5))
+        return Summary(
+            data.get("title", f"{chunk.source} #{chunk.index}"),
+            data.get("summary", ""),
+            data.get("key_points", []),
+            data.get("analogy", ""),
+            data.get("questions_to_test_yourself", []),
+            data.get("notebooklm_prompt", ""),
         )
-        try:
-            data = ai.extract_json(ai.complete(prompt, system=FLASHCARD_SYSTEM, temperature=0.4))
-            if isinstance(data, dict):
-                data = [data]
-            for item in data[:n]:
-                cards.append(Flashcard(item["question"], item["answer"], item.get("hint", "")))
-        except Exception as e:  # noqa: BLE001
-            failed += 1
-            if progress:
-                console.print(f"  [yellow]warn: chunk {chunk.source}#{chunk.index}: {e}[/yellow]")
+    except Exception as e:  # noqa: BLE001
+        logger.warning(f"Summary generation failed for {chunk.source}#{chunk.index}: {e}")
+        return None
+
+
+def _extract_concepts_for_chunk(chunk: Chunk) -> list[Concept]:
+    """Extract concepts for a single chunk. Returns list of Concept."""
+    prompt = (
+        "Extract the core concepts from this study material. "
+        f"SOURCE: {chunk.source} (part {chunk.index})\n{chunk.text[:6000]}"
+    )
+    try:
+        data = ai.extract_json(ai.complete(prompt, system=CONCEPT_SYSTEM, temperature=0.4))
+        items = data if isinstance(data, list) else [data]
+        concepts = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name") or "").strip()
+            if not name:
+                continue
+            concepts.append(Concept(
+                name=name,
+                definition=str(item.get("definition") or "").strip(),
+                related_terms=[str(t) for t in (item.get("related_terms") or [])][:6],
+                confidence=float(item.get("confidence") or 0.5),
+                source=chunk.source,
+            ))
+        return concepts
+    except Exception as e:  # noqa: BLE001
+        logger.warning(f"Concept extraction failed for {chunk.source}#{chunk.index}: {e}")
+        return _fallback_concepts(chunk)
+
+
+def generate_flashcards(chunks: list[Chunk], per_chunk: int = 6, progress: bool = True,
+                        max_workers: int | None = None) -> list[Flashcard]:
+    """Generate flashcards from chunks, optionally in parallel."""
+    if not chunks:
+        return []
+
+    # For small chunk counts, don't bother with parallelism
+    if len(chunks) <= 2 or max_workers == 1:
+        return _generate_flashcards_sequential(chunks, per_chunk, progress)
+
+    cards = []
+    failed = 0
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("{task.completed}/{task.total}"),
+        TimeElapsedColumn(),
+        console=console,
+        disable=not progress,
+    ) as pbar:
+        task = pbar.add_task("Generating flashcards", total=len(chunks))
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_generate_flashcards_for_chunk, chunk, per_chunk): chunk
+                for chunk in chunks
+            }
+            for future in as_completed(futures):
+                chunk = futures[future]
+                try:
+                    result = future.result()
+                    cards.extend(result)
+                except Exception as e:
+                    failed += 1
+                    logger.warning(f"Chunk {chunk.source}#{chunk.index} failed: {e}")
+                pbar.advance(task)
+
     if progress:
-        console.print(f"[green]generated {len(cards)} flashcards[/green]")
+        console.print(f"[green]Generated {len(cards)} flashcards[/green]")
+        if failed:
+            console.print(f"[yellow]{failed} chunks failed[/yellow]")
     return cards
 
 
-def generate_quiz(chunks, num_questions=10, progress=True) -> list[QuizQuestion]:
-    qs, failed = [], 0
-    per = max(1, num_questions // max(1, len(chunks)))
+def _generate_flashcards_sequential(chunks: list[Chunk], per_chunk: int, progress: bool) -> list[Flashcard]:
+    """Sequential fallback for small chunk counts."""
+    cards = []
+    failed = 0
     for chunk in chunks:
-        prompt = (
-            f"Write exactly {per} quiz questions from this study material.\n\n"
-            f"SOURCE: {chunk.source} (part {chunk.index})\n{chunk.text[:6000]}"
-        )
         try:
-            data = ai.extract_json(ai.complete(prompt, system=QUIZ_SYSTEM, temperature=0.5))
-            if isinstance(data, dict):
-                data = [data]
-            for item in data[:per]:
-                qs.append(QuizQuestion(item["question"], item["options"], item["answer_index"], item.get("explanation", "")))
-        except Exception as e:  # noqa: BLE001
+            result = _generate_flashcards_for_chunk(chunk, per_chunk)
+            cards.extend(result)
+        except Exception as e:
             failed += 1
             if progress:
                 console.print(f"  [yellow]warn: chunk {chunk.source}#{chunk.index}: {e}[/yellow]")
     if progress:
-        console.print(f"[green]generated {len(qs)} quiz questions[/green]")
+        console.print(f"[green]Generated {len(cards)} flashcards[/green]")
+    return cards
+
+
+def generate_quiz(chunks: list[Chunk], num_questions: int = 10, progress: bool = True,
+                  max_workers: int | None = None) -> list[QuizQuestion]:
+    """Generate quiz questions from chunks, optionally in parallel."""
+    if not chunks:
+        return []
+
+    per = max(1, num_questions // max(1, len(chunks)))
+
+    if len(chunks) <= 2 or max_workers == 1:
+        return _generate_quiz_sequential(chunks, per, progress)
+
+    qs = []
+    failed = 0
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("{task.completed}/{task.total}"),
+        TimeElapsedColumn(),
+        console=console,
+        disable=not progress,
+    ) as pbar:
+        task = pbar.add_task("Generating quiz", total=len(chunks))
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_generate_quiz_for_chunk, chunk, per): chunk
+                for chunk in chunks
+            }
+            for future in as_completed(futures):
+                chunk = futures[future]
+                try:
+                    result = future.result()
+                    qs.extend(result)
+                except Exception as e:
+                    failed += 1
+                    logger.warning(f"Chunk {chunk.source}#{chunk.index} failed: {e}")
+                pbar.advance(task)
+
+    if progress:
+        console.print(f"[green]Generated {len(qs)} quiz questions[/green]")
+        if failed:
+            console.print(f"[yellow]{failed} chunks failed[/yellow]")
     return qs
 
 
-def generate_summaries(chunks, progress=True) -> list[Summary]:
-    out, failed = [], 0
+def _generate_quiz_sequential(chunks: list[Chunk], per: int, progress: bool) -> list[QuizQuestion]:
+    """Sequential fallback for small chunk counts."""
+    qs = []
+    failed = 0
     for chunk in chunks:
-        prompt = f"Summarize this study material for learning.\n\nSOURCE: {chunk.source} (part {chunk.index})\n{chunk.text[:6000]}"
         try:
-            data = ai.extract_json(ai.complete(prompt, system=SUMMARY_SYSTEM, temperature=0.5))
-            out.append(Summary(
-                data.get("title", f"{chunk.source} #{chunk.index}"),
-                data.get("summary", ""),
-                data.get("key_points", []),
-                data.get("analogy", ""),
-                data.get("questions_to_test_yourself", []),
-                data.get("notebooklm_prompt", ""),
-            ))
-        except Exception as e:  # noqa: BLE001
+            result = _generate_quiz_for_chunk(chunk, per)
+            qs.extend(result)
+        except Exception as e:
             failed += 1
             if progress:
                 console.print(f"  [yellow]warn: chunk {chunk.source}#{chunk.index}: {e}[/yellow]")
     if progress:
-        console.print(f"[green]generated {len(out)} summaries[/green]")
+        console.print(f"[green]Generated {len(qs)} quiz questions[/green]")
+    return qs
+
+
+def generate_summaries(chunks: list[Chunk], progress: bool = True,
+                       max_workers: int | None = None) -> list[Summary]:
+    """Generate summaries from chunks, optionally in parallel."""
+    if not chunks:
+        return []
+
+    if len(chunks) <= 2 or max_workers == 1:
+        return _generate_summaries_sequential(chunks, progress)
+
+    out = []
+    failed = 0
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("{task.completed}/{task.total}"),
+        TimeElapsedColumn(),
+        console=console,
+        disable=not progress,
+    ) as pbar:
+        task = pbar.add_task("Generating summaries", total=len(chunks))
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_generate_summary_for_chunk, chunk): chunk
+                for chunk in chunks
+            }
+            for future in as_completed(futures):
+                chunk = futures[future]
+                try:
+                    result = future.result()
+                    if result:
+                        out.append(result)
+                except Exception as e:
+                    failed += 1
+                    logger.warning(f"Chunk {chunk.source}#{chunk.index} failed: {e}")
+                pbar.advance(task)
+
+    if progress:
+        console.print(f"[green]Generated {len(out)} summaries[/green]")
+        if failed:
+            console.print(f"[yellow]{failed} chunks failed[/yellow]")
+    return out
+
+
+def _generate_summaries_sequential(chunks: list[Chunk], progress: bool) -> list[Summary]:
+    """Sequential fallback for small chunk counts."""
+    out = []
+    failed = 0
+    for chunk in chunks:
+        try:
+            result = _generate_summary_for_chunk(chunk)
+            if result:
+                out.append(result)
+        except Exception as e:
+            failed += 1
+            if progress:
+                console.print(f"  [yellow]warn: chunk {chunk.source}#{chunk.index}: {e}[/yellow]")
+    if progress:
+        console.print(f"[green]Generated {len(out)} summaries[/green]")
     return out
 
 
@@ -176,30 +390,68 @@ def _fallback_concepts(chunk: Chunk) -> list[Concept]:
     return concepts
 
 
-def extract_concepts(chunks, progress=True) -> list[Concept]:
+def extract_concepts(chunks: list[Chunk], progress: bool = True,
+                     max_workers: int | None = None) -> list[Concept]:
+    """Extract concepts from chunks, optionally in parallel."""
+    if not chunks:
+        return []
+
+    if len(chunks) <= 2 or max_workers == 1:
+        return _extract_concepts_sequential(chunks, progress)
+
+    all_concepts: list[Concept] = []
+    failed = 0
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("{task.completed}/{task.total}"),
+        TimeElapsedColumn(),
+        console=console,
+        disable=not progress,
+    ) as pbar:
+        task = pbar.add_task("Extracting concepts", total=len(chunks))
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_extract_concepts_for_chunk, chunk): chunk
+                for chunk in chunks
+            }
+            for future in as_completed(futures):
+                chunk = futures[future]
+                try:
+                    result = future.result()
+                    all_concepts.extend(result)
+                except Exception as e:
+                    failed += 1
+                    logger.warning(f"Chunk {chunk.source}#{chunk.index} failed: {e}")
+                pbar.advance(task)
+
+    # Deduplicate
+    deduped: list[Concept] = []
+    seen = set()
+    for concept in all_concepts:
+        key = (concept.name.lower(), concept.source.lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(concept)
+
+    if progress:
+        console.print(f"[green]Extracted {len(deduped)} concepts[/green]")
+        if failed:
+            console.print(f"[yellow]{failed} chunks failed[/yellow]")
+    return deduped
+
+
+def _extract_concepts_sequential(chunks: list[Chunk], progress: bool) -> list[Concept]:
+    """Sequential fallback for small chunk counts."""
     concepts: list[Concept] = []
     for chunk in chunks:
-        prompt = (
-            "Extract the core concepts from this study material. "
-            f"SOURCE: {chunk.source} (part {chunk.index})\n{chunk.text[:6000]}"
-        )
         try:
-            data = ai.extract_json(ai.complete(prompt, system=CONCEPT_SYSTEM, temperature=0.4))
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if not isinstance(item, dict):
-                    continue
-                name = str(item.get("name") or "").strip()
-                if not name:
-                    continue
-                concepts.append(Concept(
-                    name=name,
-                    definition=str(item.get("definition") or "").strip(),
-                    related_terms=[str(t) for t in (item.get("related_terms") or [])][:6],
-                    confidence=float(item.get("confidence") or 0.5),
-                    source=chunk.source,
-                ))
-        except Exception as e:  # noqa: BLE001
+            result = _extract_concepts_for_chunk(chunk)
+            concepts.extend(result)
+        except Exception as e:
             if progress:
                 console.print(f"  [yellow]warn: concept extraction failed for {chunk.source}#{chunk.index}: {e}[/yellow]")
             concepts.extend(_fallback_concepts(chunk))
@@ -214,7 +466,7 @@ def extract_concepts(chunks, progress=True) -> list[Concept]:
         deduped.append(concept)
 
     if progress:
-        console.print(f"[green]generated {len(deduped)} concepts[/green]")
+        console.print(f"[green]Extracted {len(deduped)} concepts[/green]")
     return deduped
 
 

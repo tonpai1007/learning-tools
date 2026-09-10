@@ -28,6 +28,9 @@ output/
 data/
 !data/.gitkeep
 
+# API response cache
+lt/cache/
+
 # IDE / OS
 .vscode/
 .DS_Store

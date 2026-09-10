@@ -44,7 +44,24 @@ class Source:
         for i, page in enumerate(reader.pages, 1):
             text = page.extract_text() or ""
             pages.append(f"\n--- [page {i}] ---\n{text}")
-        return "\n".join(pages)
+
+        joined = "\n".join(pages)
+        # If pypdf found little or no text (scanned/image PDF), fall back to pdfplumber.
+        if len(joined.strip()) < 100:
+            try:
+                import pdfplumber
+
+                pages = []
+                with pdfplumber.open(str(self.path)) as pdf:
+                    for i, page in enumerate(pdf.pages, 1):
+                        text = page.extract_text() or "[scanned image page - no text layer]"
+                        pages.append(f"\n--- [page {i}] ---\n{text}")
+                fallback = "\n".join(pages)
+                if len(fallback.strip()) > len(joined.strip()):
+                    return fallback
+            except Exception:
+                pass  # keep the pypdf result if pdfplumber also fails
+        return joined
 
     def _read_docx(self) -> str:
         from docx import Document

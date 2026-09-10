@@ -24,8 +24,20 @@ output:
   dir: "output"
   data_dir: "data"
 
+# Study guide generation
+study:
+  num_practice_questions: 4     # practice problems generated per chapter
+  title: "Study Guide"          # default title of the generated HTML
+
 # Spaced repetition (SM-2 style)
 spaced_repetition:
   ease: 2.5
   learning_interval_min: 10     # minutes
   grad_interval_h: 24           # hours for graduating a card
+
+# Sync to Obsidian vault / AMADEUS (hybrid: tries AMADEUS, falls back to local copy)
+sync:
+  vault_root: ""                 # e.g. "C:\Users\Tonpa\MySecondBrain\learning-tools"; empty = Path.home()/MySecondBrain/learning-tools
+  amadeus_url: "http://127.0.0.1:8000/api/v1/second-brain/sync/learning-tools"
+  amadeus_export_url: "http://127.0.0.1:8000/api/v1/second-brain/sync/kilo-plan/export-all"
+  api_key_env: "AMADEUS_BRAIN_API_KEY"
