@@ -84,6 +84,35 @@ def cmd_ingest(args):
     _load_sources(args)
 
 
+def cmd_md(args):
+    """Generate a Markdown document from text content.
+
+    Args:
+        args: Parsed CLI arguments with title, output, content, and dry_run
+    """
+    from .generators.md import generate_md
+
+    # Handle dry-run mode
+    if args.dry_run:
+        console.print("[yellow]DRY RUN: Would generate Markdown document[/yellow]")
+        console.print(f"  Title: {args.title}")
+        console.print(f"  Output: {args.output}")
+        if args.content:
+            console.print(f"  Content preview: {args.content[:80]}{'...' if len(args.content) > 80 else ''}")
+        return
+
+    # Prepare content with title prepended (generate_md uses first line as title)
+    content = args.content if args.content else ""
+    if args.title and content:
+        content = f"# {args.title}\n\n{content}"
+    elif args.title and not content:
+        content = f"# {args.title}\n\n"
+
+    # Generate the Markdown document
+    output_path = generate_md(content, args.output)
+    console.print(f"[green]Generated:[/green] {output_path}")
+
+
 def cmd_cards(args):
     sources = _load_sources(args)
     if not sources:
@@ -351,7 +380,7 @@ def build_parser():
     sp.add_argument("--force", action="store_true", help="force re-ingest even if already indexed")
     sp = sub.add_parser("clean", help="clear cache and temporary files")
     sp.add_argument("--all", action="store_true", help="also clear output directory")
-    sp = sub.add_parser("md", help="generate a Markdown document"); sp.add_argument("--title", default="Document", help="title of the markdown document"); sp.add_argument("--output", help="output file path"); sp.add_argument("--content", help="markdown content")
+    sp = sub.add_parser("md", help="generate a Markdown document"); sp.add_argument("--title", default="Document", help="title of the markdown document"); sp.add_argument("--output", help="output file path"); sp.add_argument("--content", help="markdown content"); sp.add_argument("--dry_run", action="store_true", help="show what would be generated without writing")
     sp = sub.add_parser("all", help="run cards + quiz + summarize"); add_common(sp)
     return p
 

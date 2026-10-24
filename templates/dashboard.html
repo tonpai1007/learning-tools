@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Learning Tools{% endblock %}
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-box">
+        <div class="value">{{ stats.total_reviews }}</div>
+        <div class="label">Total Reviews</div>
+    </div>
+    <div class="stat-box">
+        <div class="value">{{ stats.reviews_this_week }}</div>
+        <div class="label">This Week</div>
+    </div>
+    <div class="stat-box">
+        <div class="value">{{ stats.reviews_this_month }}</div>
+        <div class="label">This Month</div>
+    </div>
+    <div class="stat-box">
+        <div class="value">{{ stats.avg_review_quality }}</div>
+        <div class="label">Avg Quality (0-5)</div>
+    </div>
+    <div class="stat-box">
+        <div class="value">{{ stats.total_quizzes }}</div>
+        <div class="label">Quizzes Taken</div>
+    </div>
+    <div class="stat-box">
+        <div class="value">{{ stats.avg_quiz_score }}%</div>
+        <div class="label">Avg Quiz Score</div>
+    </div>
+    <div class="stat-box">
+        <div class="value">{{ stats.total_study_hours }}</div>
+        <div class="label">Study Hours</div>
+    </div>
+    <div class="stat-box">
+        <div class="value">{{ stats.total_quiz_minutes }}</div>
+        <div class="label">Quiz Minutes</div>
+    </div>
+</div>
+
+<div class="grid-2" style="margin-top: 16px;">
+    <div class="card">
+        <h2>Activity (Last 14 Days)</h2>
+        {% if daily %}
+        <div style="display: flex; align-items: flex-end; gap: 4px; height: 120px;">
+            {% for d in daily %}
+            {% set max_count = daily | map(attribute='count') | max %}
+            <div style="flex: 1; text-align: center;">
+                <div style="background: #1976d2; border-radius: 3px 3px 0 0; margin: 0 1px; min-height: 4px; {{ 'height: ' ~ (d.count / max_count * 100) ~ 'px' if max_count > 0 else 'height: 4px' }};"></div>
+                <div style="font-size: 10px; color: #999; margin-top: 4px;">{{ d.day[5:] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">No activity yet</div>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Upcoming Reviews</h2>
+        {% if upcoming %}
+        <table>
+            <thead><tr><th>Card</th><th>Source</th><th>Due (hrs)</th></tr></thead>
+            <tbody>
+                {% for card in upcoming[:8] %}
+                <tr>
+                    <td>{{ card.card_id[:40] }}{% if card.card_id|length > 40 %}...{% endif %}</td>
+                    <td>{{ card.source[:20] }}</td>
+                    <td>{{ card.due_since_hours }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No cards due</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <h2>Weak Concepts</h2>
+    {% if weak_concepts %}
+    <table>
+        <thead><tr><th>Concept</th><th>Source</th><th>Reviews</th><th>Correct</th><th>Strength</th></tr></thead>
+        <tbody>
+            {% for c in weak_concepts[:8] %}
+            <tr>
+                <td>{{ c.concept }}</td>
+                <td>{{ c.source[:20] }}</td>
+                <td>{{ c.times_reviewed }}</td>
+                <td>{{ c.times_correct }}</td>
+                <td><span class="badge badge-weak">{{ "%.0f"|format(c.strength * 100) }}%</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">No concepts tracked yet</div>
+    {% endif %}
+</div>
+{% endblock %}

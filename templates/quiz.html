@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Quiz - Learning Tools{% endblock %}
+{% block content %}
+<div id="quiz-container">
+    <div class="card">
+        <h2>Practice Quiz</h2>
+        <p style="color: #666; margin-bottom: 16px;">Test your knowledge with a practice quiz. Results will be tracked in analytics.</p>
+        <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+    </div>
+    <div id="quiz-questions" style="display: none;"></div>
+    <div id="quiz-results" style="display: none;"></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let quizStartTime = 0;
+let correctCount = 0;
+let totalQuestions = 0;
+
+const sampleQuestions = [
+    { q: "What is the primary purpose of spaced repetition?", options: ["To memorize faster", "To review at optimal intervals", "To reduce study time", "To skip difficult topics"], answer: 1 },
+    { q: "Which data structure uses FIFO ordering?", options: ["Stack", "Queue", "Tree", "Graph"], answer: 1 },
+    { q: "What does API stand for?", options: ["Application Programming Interface", "Advanced Program Integration", "Automated Protocol Interface", "Application Process Interaction"], answer: 0 },
+    { q: "Which sorting algorithm has O(n log n) average case?", options: ["Bubble Sort", "Insertion Sort", "Merge Sort", "Selection Sort"], answer: 2 },
+    { q: "What is the time complexity of binary search?", options: ["O(n)", "O(log n)", "O(n^2)", "O(1)"], answer: 1 },
+];
+
+function startQuiz() {
+    quizStartTime = Date.now();
+    correctCount = 0;
+    totalQuestions = sampleQuestions.length;
+    document.getElementById('quiz-questions').style.display = 'block';
+    document.getElementById('quiz-results').style.display = 'none';
+    renderQuestions();
+}
+
+function renderQuestions() {
+    const container = document.getElementById('quiz-questions');
+    let html = '';
+    sampleQuestions.forEach((q, i) => {
+        html += `<div class="quiz-question" id="q${i}">`;
+        html += `<div class="q">Q${i+1}. ${q.q}</div>`;
+        html += `<div class="quiz-options">`;
+        q.options.forEach((opt, j) => {
+            html += `<label><input type="radio" name="q${i}" value="${j}"> ${opt}</label>`;
+        });
+        html += `</div></div>`;
+    });
+    html += `<button class="btn btn-primary" onclick="submitQuiz()" style="margin-top: 16px;">Submit Answers</button>`;
+    container.innerHTML = html;
+}
+
+function submitQuiz() {
+    correctCount = 0;
+    sampleQuestions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && parseInt(selected.value) === q.answer) {
+            correctCount++;
+        }
+    });
+
+    const duration = (Date.now() - quizStartTime) / 1000;
+    const pct = Math.round(correctCount / totalQuestions * 100);
+
+    document.getElementById('quiz-questions').style.display = 'none';
+    const results = document.getElementById('quiz-results');
+    results.style.display = 'block';
+    results.innerHTML = `
+        <div class="card">
+            <h2>Quiz Results</h2>
+            <div class="stats-grid">
+                <div class="stat-box"><div class="value">${correctCount}/${totalQuestions}</div><div class="label">Correct</div></div>
+                <div class="stat-box"><div class="value">${pct}%</div><div class="label">Score</div></div>
+                <div class="stat-box"><div class="value">${Math.round(duration)}s</div><div class="label">Duration</div></div>
+            </div>
+            <button class="btn btn-primary" onclick="startQuiz()" style="margin-top: 16px;">Try Again</button>
+        </div>
+    `;
+
+    postJSON('/quiz/submit', {
+        total_questions: totalQuestions,
+        correct: correctCount,
+        duration_seconds: duration
+    });
+}
+</script>
+{% endblock %}

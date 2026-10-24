@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block title %}Code Graph{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Code Knowledge Graph</h1>
+    <p class="subtitle">Interactive visualization of codebase structure and dependencies</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Graph Stats</h2>
+    </div>
+    <div id="graph-stats" class="stats-grid">
+        <div class="stat-card"><span class="stat-value" id="stat-nodes">-</span><span class="stat-label">Nodes</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-edges">-</span><span class="stat-label">Edges</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-modules">-</span><span class="stat-label">Modules</span></div>
+        <div class="card"><span class="stat-value" id="stat-classes">-</span><span class="stat-label">Classes</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-functions">-</span><span class="stat-label">Functions</span></div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Filter</h2>
+    </div>
+    <div class="filter-row">
+        <label><input type="checkbox" id="filter-module" checked> Modules</label>
+        <label><input type="checkbox" id="filter-class" checked> Classes</label>
+        <label><input type="checkbox" id="filter-function" checked> Functions</label>
+        <label><input type="checkbox" id="filter-method" checked> Methods</label>
+        <label><input type="checkbox" id="filter-ext" checked> External</label>
+    </div>
+</div>
+
+<div class="card graph-container">
+    <div id="graph-network"></div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Legend</h2>
+    </div>
+    <div class="legend">
+        <span class="legend-item"><span class="legend-color" style="background:#4a90d9"></span> Core (lt/)</span>
+        <span class="legend-item"><span class="legend-color" style="background:#7cb342"></span> Tests</span>
+        <span class="legend-item"><span class="legend-color" style="background:#e53935"></span> Projects</span>
+        <span class="legend-item"><span class="legend-color" style="background:#ff9800"></span> Root</span>
+        <span class="legend-item"><span class="legend-color" style="background:#9c27b0"></span> External</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+#graph-network {
+    height: 600px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+}
+.filter-row {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+.filter-row label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+}
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    display: inline-block;
+}
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+.stat-label {
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+}
+.stats-grid {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script>
+let network = null;
+let allNodes = [];
+let allEdges = [];
+
+const typeColors = {
+    'module': { core: '#4a90d9', tests: '#7cb342', projects: '#e53935', root: '#ff9800' },
+    'class': { core: '#64b5f6', tests: '#9ccc65', projects: '#ef5350', root: '#ffb74d' },
+    'function': { core: '#90caf9', tests: '#aed581', projects: '#e57373', root: '#ffcc80' },
+    'method': { core: '#bbdefb', tests: '#c5e1a5', projects: '#ef9a9a', root: '#ffe0b2' },
+    'external': '#9c27b0'
+};
+
+function getCommunity(node) {
+    if (node.type === 'external') return 'external';
+    const path = node.path || '';
+    if (path.startsWith('lt/')) return 'core';
+    if (path.startsWith('tests/')) return 'tests';
+    if (path.startsWith('projects/')) return 'projects';
+    return 'root';
+}
+
+function getNodeColor(node) {
+    if (node.type === 'external') return typeColors.external;
+    const comm = getCommunity(node);
+    const colors = typeColors[node.type] || typeColors.module;
+    return colors[comm] || '#999';
+}
+
+function buildGraph() {
+    fetch('/api/graph')
+        .then(r => r.json())
+        .then(data => {
+            allNodes = data.nodes;
+            allEdges = data.edges;
+
+            // Update stats
+            document.getElementById('stat-nodes').textContent = data.stats.total_nodes;
+            document.getElementById('stat-edges').textContent = data.stats.total_edges;
+            document.getElementById('stat-modules').textContent = data.stats.modules;
+            document.getElementById('stat-classes').textContent = data.stats.classes;
+            document.getElementById('stat-functions').textContent = data.stats.functions + data.stats.methods;
+
+            renderGraph();
+        });
+}
+
+function renderGraph() {
+    const activeFilters = {
+        'module': document.getElementById('filter-module').checked,
+        'class': document.getElementById('filter-class').checked,
+        'function': document.getElementById('filter-function').checked,
+        'method': document.getElementById('filter-method').checked,
+        'external': document.getElementById('filter-ext').checked,
+    };
+
+    const visNodes = allNodes
+        .filter(n => activeFilters[n.type])
+        .map(n => ({
+            id: n.id,
+            label: n.label,
+            color: getNodeColor(n),
+            shape: n.type === 'module' ? 'box' : (n.type === 'external' ? 'diamond' : 'dot'),
+            size: n.type === 'module' ? 20 : (n.type === 'external' ? 12 : 14),
+            font: { size: n.type === 'module' ? 14 : 11 },
+            title: `${n.type}: ${n.label}${n.path ? '\n' + n.path : ''}${n.file ? '\n' + n.file : ''}`,
+        }));
+
+    const nodeIds = new Set(visNodes.map(n => n.id));
+    const visEdges = allEdges
+        .filter(e => nodeIds.has(e.source) && nodeIds.has(e.target))
+        .map((e, i) => ({
+            id: `edge_${i}`,
+            from: e.source,
+            to: e.target,
+            label: e.relation,
+            color: e.confidence === 'EXTRACTED' ? '#666' : (e.confidence === 'INFERRED' ? '#aaa' : '#ccc'),
+            dashes: e.confidence === 'INFERRED',
+            width: e.weight || 1,
+            font: { size: 9, color: '#999' },
+            arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+        }));
+
+    const container = document.getElementById('graph-network');
+    const graphData = { nodes: new vis.DataSet(visNodes), edges: new vis.DataSet(visEdges) };
+    const options = {
+        layout: { improvedLayout: true },
+        physics: {
+            solver: 'forceAtlas2Based',
+            forceAtlas2Based: { gravitationalConstant: -50, springLength: 100, springConstant: 0.08 },
+            stabilization: { iterations: 150 },
+        },
+        interaction: { hover: true, tooltipDelay: 200 },
+    };
+
+    if (network) network.destroy();
+    network = new vis.Network(container, graphData, options);
+}
+
+// Bind filter events
+['module', 'class', 'function', 'method', 'ext'].forEach(type => {
+    document.getElementById(`filter-${type}`).addEventListener('change', renderGraph);
+});
+
+buildGraph();
+</script>
+{% endblock %}

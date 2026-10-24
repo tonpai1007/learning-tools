@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Flashcards - Learning Tools{% endblock %}
+{% block content %}
+<div id="review-area">
+    <div class="flashcard" id="flashcard">
+        <div class="question" id="question-text">Loading cards...</div>
+        <div class="answer" id="answer-text"></div>
+        <div class="review-buttons" id="review-buttons" style="display: none;">
+            <button class="btn btn-danger" onclick="rate(0)">Again</button>
+            <button class="btn btn-danger" onclick="rate(1)">Hard</button>
+            <button class="btn btn-primary" onclick="rate(3)">Good</button>
+            <button class="btn btn-success" onclick="rate(5)">Easy</button>
+        </div>
+        <button class="btn btn-primary" id="show-answer-btn" onclick="showAnswer()">Show Answer</button>
+    </div>
+    <p style="text-align: center; margin-top: 16px; color: #999;" id="card-counter"></p>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let cards = [];
+let currentIndex = 0;
+
+async function loadCards() {
+    const res = await fetch('/flashcards/review');
+    cards = await res.json();
+    currentIndex = 0;
+    showCard();
+}
+
+function showCard() {
+    if (cards.length === 0 || currentIndex >= cards.length) {
+        document.getElementById('question-text').textContent = 'No cards due for review!';
+        document.getElementById('answer-text').style.display = 'none';
+        document.getElementById('review-buttons').style.display = 'none';
+        document.getElementById('show-answer-btn').style.display = 'none';
+        document.getElementById('card-counter').textContent = '';
+        return;
+    }
+    const card = cards[currentIndex];
+    document.getElementById('question-text').textContent = card.card_id;
+    document.getElementById('answer-text').textContent = card.source || 'No answer recorded';
+    document.getElementById('answer-text').style.display = 'none';
+    document.getElementById('review-buttons').style.display = 'none';
+    document.getElementById('show-answer-btn').style.display = 'inline-block';
+    document.getElementById('card-counter').textContent = `Card ${currentIndex + 1} of ${cards.length}`;
+}
+
+function showAnswer() {
+    document.getElementById('answer-text').style.display = 'block';
+    document.getElementById('review-buttons').style.display = 'flex';
+    document.getElementById('show-answer-btn').style.display = 'none';
+}
+
+async function rate(quality) {
+    const card = cards[currentIndex];
+    await postJSON('/flashcards/review', {
+        card_id: card.card_id,
+        quality: quality,
+        source: card.source || ''
+    });
+    currentIndex++;
+    showCard();
+}
+
+loadCards();
+</script>
+{% endblock %}

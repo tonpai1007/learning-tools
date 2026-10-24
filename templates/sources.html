@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Sources - Learning Tools{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Source Files</h2>
+    <p style="color: #666; margin-bottom: 16px;">Files in the <code>sources/</code> directory are processed by the learning tools pipeline.</p>
+    {% if sources %}
+    <table>
+        <thead><tr><th>Name</th><th>Size</th><th>Modified</th></tr></thead>
+        <tbody>
+            {% for s in sources %}
+            <tr>
+                <td>{{ s.name }}</td>
+                <td>{{ "%.1f"|format(s.size / 1024) }} KB</td>
+                <td>{{ s.modified | int | timestamp_to_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">No source files found. Add files to the <code>sources/</code> directory.</div>
+    {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+// Simple timestamp formatter
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('td').forEach(td => {
+        const text = td.textContent;
+        if (text.match(/^\d{10}\.\d+$/)) {
+            const date = new Date(parseFloat(text) * 1000);
+            td.textContent = date.toLocaleString();
+        }
+    });
+});
+</script>
+{% endblock %}

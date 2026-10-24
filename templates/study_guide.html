@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Study Guide - Learning Tools{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Generated Study Guides</h2>
+    {% if guides %}
+    <table>
+        <thead><tr><th>Name</th><th>Action</th></tr></thead>
+        <tbody>
+            {% for guide in guides %}
+            <tr>
+                <td>{{ guide.name }}</td>
+                <td><a href="file:///{{ guide.path }}" target="_blank" class="btn btn-sm btn-primary">Open</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">No study guides generated yet. Run <code>lt generate</code> to create some.</div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>Output Files</h2>
+    <p style="color: #666;">All generated files are in the <code>output/</code> directory.</p>
+</div>
+{% endblock %}
