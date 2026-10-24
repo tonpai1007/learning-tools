@@ -20,6 +20,9 @@ from pathlib import Path
 from rich.console import Console
 
 from . import ai, export, generate, ingest, srs, studyguide
+
+from .generators.md import generate_md, detect_intent
+
 from .chunker import chunk_sources
 from .config import cfg
 
@@ -269,6 +272,25 @@ def cmd_clean(args):
             console.print(f"[green]Cleared output directory[/green]")
 
 
+def cmd_md(args):
+    """Generate a Markdown document from text content."""
+    from pathlib import Path
+    from .generators.md import generate_md
+    
+    title = getattr(args, "title", "Document")
+    output = getattr(args, "output", None)
+    
+    # Default content if none provided
+    content = getattr(args, "content", None)
+    if not content:
+        content = f"# {title}\n\nGenerated markdown document."
+    
+    output_path = output or Path("output.md")
+    result = generate_md(content, output_path)
+    console.print(f"[green]Markdown generated: {result}[/green]")
+    console.print(f"Title: {title}")
+
+
 def cmd_all(args):
     args.per_chunk = getattr(args, "per_chunk", 6)
     args.add = getattr(args, "add", False)
@@ -329,6 +351,7 @@ def build_parser():
     sp.add_argument("--force", action="store_true", help="force re-ingest even if already indexed")
     sp = sub.add_parser("clean", help="clear cache and temporary files")
     sp.add_argument("--all", action="store_true", help="also clear output directory")
+    sp = sub.add_parser("md", help="generate a Markdown document"); sp.add_argument("--title", default="Document", help="title of the markdown document"); sp.add_argument("--output", help="output file path"); sp.add_argument("--content", help="markdown content")
     sp = sub.add_parser("all", help="run cards + quiz + summarize"); add_common(sp)
     return p
 
@@ -346,6 +369,7 @@ def main(argv=None):
         {
             "ingest": cmd_ingest, "cards": cmd_cards, "quiz": cmd_quiz, "summarize": cmd_summarize,
             "tutor": cmd_tutor, "review": cmd_review, "stats": cmd_stats, "sample": cmd_sample,
+            "md": cmd_md,
             "study-guide": cmd_study_guide, "all": cmd_all, "clean": cmd_clean,
             "export-plans": cmd_export_plans, "ingest-pdf": cmd_ingest_pdf,
         }[args.command](args)

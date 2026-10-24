@@ -1,0 +1,17 @@
+collect_ignore = [
+    "test_md_cli.py",
+    "test_docx_gen.py",
+    "test_import.py",
+    "test_intents.py",
+    "test_intents_final.py",
+    "test_md.py",
+    "test_md_detect.py",
+    "test_md_generate.py",
+    "test_cli_parser.py",
+    "test_intent.py",
+    "test_intents.py",
+    "test_gpt_intent.py",
+    "test_memory.py",
+    "test_docgen.py",
+    "test_docx_gen.py",
+]
