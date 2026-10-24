@@ -1,3 +1,4 @@
+collect_ignore_glob = ["scratch/*"]
 collect_ignore = [
     "test_md_cli.py",
     "test_docx_gen.py",
