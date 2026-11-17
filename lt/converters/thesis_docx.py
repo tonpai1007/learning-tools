@@ -6,11 +6,19 @@ according to the KMITL thesis template/guideline (Rev.1, 28 Sep 2023):
 - A4 paper, margins: top/right/bottom 1", left 1.5"
 - TH Sarabun New font: 16pt body, 20pt English cover title, 24pt chapter titles,
   18pt major headings, 16pt subheadings, Cambria Math 11pt equations
-- Front matter (cover, title page, copyright, abstract, acknowledgement, TOC)
-  with Roman numeral page numbers (I, II, ...) bottom-center
-- Main body with Arabic page numbers top-right (first body page suppressed)
+- Page numbering per the guideline:
+    * cover, title, copyright, approval sheet: no page numbers
+    * Thai/English abstracts, acknowledgement, TOC, lists: Roman numerals
+      (I, II, ...) bottom-center
+    * chapters: Arabic numerals top-right, suppressed on the first page of
+      every chapter (one Word section per chapter)
+- Front matter pages generated from YAML metadata:
+    cover, English title page, copyright, approval sheet, Thai abstract,
+    English abstract, acknowledgement, Table of Contents,
+    List of Tables, List of Figures
 - Chapters rendered as "CHAPTER n" (20pt bold centered) + title (24pt bold centered)
-- Tables/figures/equations auto-numbered per chapter (e.g. Table 3.1, Figure 3.1)
+- Table/figure captions use SEQ fields, so the List of Tables / List of
+  Figures populate themselves when fields are updated (F9) in Word.
 
 Usage:
     from lt.converters.thesis_docx import convert_thesis_md
@@ -19,9 +27,10 @@ Usage:
 Markdown contract:
 - YAML front matter between --- fences supplies metadata (title, author, year,
   degree, program, student_id, advisor, co_advisor, code, plan, abstract,
-  acknowledgement).
+  abstract_thai, acknowledgement).
 - "# Heading" starts a new chapter; "##" major heading; "###" subheading.
-- Tables in GitHub pipe format; images ![caption](path); display math $$...$$.
+- Tables in GitHub pipe format (optional "Table: caption" line before);
+  images ![caption](path); display math $$...$$.
 """
 
 from __future__ import annotations
@@ -70,6 +79,15 @@ DEFAULT_META: dict[str, str] = {
     "plan": "1.2",
 }
 
+THAI_ABSTRACT_PLACEHOLDER = (
+    "เขียนบทคัดย่อภาษาไทยที่นี่ ความยาวประมาณ 200–250 คำ "
+    "โดยเน้นประเด็นสำคัญของงานวิจัย วิธีการดำเนินงาน และผลการศึกษาที่สำคัญ"
+)
+ENGLISH_ABSTRACT_PLACEHOLDER = (
+    "Replace this text with a 200-250 word abstract summarizing the research "
+    "problem, methodology, and key findings."
+)
+
 
 # --------------------------------------------------------------------------
 # Low-level helpers
@@ -105,35 +123,56 @@ def _run_font(run: Any, size: float | None = None, bold: bool | None = None,
     _apply_cs_font(run._element, name)
 
 
+def _field_run(run: Any, instr: str, cached_text: str = "") -> None:
+    """Append a complex field (begin/instr/separate/[cached]/end) to a run."""
+    base = run._element
+    fld_begin = base.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "begin"})
+    instr_el = base.makeelement(qn("w:instrText"), {})
+    instr_el.set(qn("xml:space"), "preserve")
+    instr_el.text = f" {instr} "
+    fld_sep = base.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "separate"})
+    parts = [fld_begin, instr_el, fld_sep]
+    if cached_text:
+        cached = base.makeelement(qn("w:t"), {})
+        cached.set(qn("xml:space"), "preserve")
+        cached.text = cached_text
+        parts.append(cached)
+    parts.append(base.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "end"}))
+    for el in parts:
+        base.append(el)
+
+
 def _add_page_field(paragraph: Any, fmt: str = "decimal") -> None:
     """Insert a PAGE field: fmt 'decimal' (1,2,3) or 'ROMAN' (I,II,III)."""
     run = paragraph.add_run()
     _run_font(run, 16)
     instr = f"PAGE \\* {fmt}" if fmt != "decimal" else "PAGE"
-    fld_begin = run._element.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "begin"})
-    instr_el = run._element.makeelement(qn("w:instrText"), {})
-    instr_el.set(qn("xml:space"), "preserve")
-    instr_el.text = f" {instr} "
-    fld_sep = run._element.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "separate"})
-    fld_end = run._element.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "end"})
-    for el in (fld_begin, instr_el, fld_sep, fld_end):
-        run._element.append(el)
+    _field_run(run, instr)
 
 
-def _add_toc_field(paragraph: Any) -> None:
-    """Insert a TOC field (updates itself when the user presses F9 in Word)."""
+def _add_toc_field(paragraph: Any, instr: str, hint: str) -> None:
+    """Insert a TOC-type field (e.g. standard TOC or \\c caption lists)."""
     run = paragraph.add_run()
     _run_font(run, 16)
-    fld_begin = run._element.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "begin"})
-    instr_el = run._element.makeelement(qn("w:instrText"), {})
-    instr_el.set(qn("xml:space"), "preserve")
-    instr_el.text = ' TOC \\o "1-3" \\h \\z \\u '
-    fld_sep = run._element.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "separate"})
-    hint = run._element.makeelement(qn("w:t"), {})
-    hint.text = "Right-click and choose 'Update Field' to build the table of contents."
-    fld_end = run._element.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): "end"})
-    for el in (fld_begin, instr_el, fld_sep, hint, fld_end):
-        run._element.append(el)
+    _field_run(run, instr, cached_text=hint)
+
+
+def _add_seq_caption(paragraph: Any, label: str, seq_name: str,
+                     chapter: int, number: int, caption: str) -> None:
+    """Caption line: 'Table 3.1 caption text' using a SEQ field for the number.
+
+    The chapter number is literal (deterministic at render time) and the
+    sequence number is a SEQ field restarting at Heading 1 (\\s 1), so the
+    TOC \\c "<label>" list pages collect these captions on field update.
+    """
+    r = paragraph.add_run(f"{label} {chapter}.")
+    _run_font(r, 16, bold=True)
+    run = paragraph.add_run()
+    _run_font(run, 16, bold=True)
+    _field_run(run, f"SEQ {seq_name} \\* ARABIC \\s 1", cached_text=str(number))
+    r = paragraph.add_run(" ")
+    _run_font(r, 16, bold=True)
+    _add_inline(paragraph, caption)
 
 
 def _centered(doc: Document, text: str, size: float, bold: bool = False,
@@ -171,7 +210,7 @@ def _add_inline(paragraph: Any, text: str, size: float = 16) -> None:
 
 
 # --------------------------------------------------------------------------
-# Page setup, styles, sections
+# Page setup, styles, section configuration
 # --------------------------------------------------------------------------
 
 def _setup_page(section: Any) -> None:
@@ -218,25 +257,24 @@ def _setup_styles(doc: Document) -> None:
             pass
 
 
-def _setup_sections(doc: Document, meta: dict[str, str]) -> tuple[Any, Any]:
-    """Front matter section (Roman numerals) + body section (Arabic numerals)."""
-    front = doc.sections[0]
-    _setup_page(front)
-
-    front.footer.is_linked_to_previous = False
-    fp = front.footer.paragraphs[0]
+def _configure_roman_footer(section: Any) -> None:
+    """Unnumbered→Roman footer: PAGE \\* ROMAN bottom-center (abstract onward)."""
+    section.footer.is_linked_to_previous = False
+    fp = section.footer.paragraphs[0]
     fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    fp.paragraph_format.first_line_indent = Inches(0)
     _add_page_field(fp, fmt="ROMAN")
 
-    body = doc.add_section(WD_SECTION_START.NEW_PAGE)
-    _setup_page(body)
-    body.header.is_linked_to_previous = False
-    body.footer.is_linked_to_previous = False
-    body.different_first_page_header_footer = True  # no page number on chapter-1 first page
-    hp = body.header.paragraphs[0]
+
+def _configure_body_section(section: Any) -> None:
+    """Chapter sections: Arabic PAGE field top-right, none on chapter first page."""
+    section.header.is_linked_to_previous = False
+    section.footer.is_linked_to_previous = False
+    section.different_first_page_header_footer = True
+    hp = section.header.paragraphs[0]
     hp.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    hp.paragraph_format.first_line_indent = Inches(0)
     _add_page_field(hp, fmt="decimal")
-    return front, body
 
 
 # --------------------------------------------------------------------------
@@ -271,14 +309,41 @@ def _render_copyright(doc: Document, meta: dict[str, str]) -> None:
         doc.add_paragraph()
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    for line in (f"COPYRIGHT {meta['year']}", "SCHOOL OF ENGINEERING",
-                 "KING MONGKUT'S INSTITUTE OF TECHNOLOGY LADKRABANG"):
-        r = p.add_run(line + ("\n" if line != "KING MONGKUT'S INSTITUTE OF TECHNOLOGY LADKRABANG" else ""))
+    lines = (f"COPYRIGHT {meta['year']}", "SCHOOL OF ENGINEERING",
+             "KING MONGKUT'S INSTITUTE OF TECHNOLOGY LADKRABANG")
+    for i, line in enumerate(lines):
+        r = p.add_run(line + ("\n" if i < len(lines) - 1 else ""))
         _run_font(r, 16, bold=False)
     doc.add_page_break()
 
 
-def _render_abstract(doc: Document, meta: dict[str, str]) -> None:
+def _render_approval_sheet(doc: Document, meta: dict[str, str]) -> None:
+    """Placeholder approval page (issued by the graduate school; signed by the
+    Dean after the final defense)."""
+    _centered(doc, "APPROVAL SHEET", 24, bold=True, space_after=18)
+    _centered(doc, meta["title"], 18, bold=True, space_after=6)
+    _centered(doc, f"by {meta['author']}", 16, space_after=4)
+    _centered(doc, f"{meta['degree']} in {meta['program']}", 16, space_after=24)
+    _centered(doc, "Approved by the Thesis Examination Committee:", 16, space_after=18)
+    signers = [
+        ("Thesis Advisor", meta["advisor"]),
+        ("Committee Chairperson", ""),
+        ("Committee Member", ""),
+        ("Committee Member", ""),
+        ("Dean of the School of Engineering", ""),
+    ]
+    for role, name in signers:
+        p = doc.add_paragraph()
+        p.paragraph_format.first_line_indent = Inches(0)
+        p.paragraph_format.space_after = Pt(24)
+        r = p.add_run(f"{role} ............................................")
+        _run_font(r, 16)
+        if name:
+            r2 = p.add_run(f"  ({name})")
+            _run_font(r2, 16)
+
+
+def _render_abstract(doc: Document, meta: dict[str, str], thai: bool = False) -> None:
     rows = [
         ("Thesis", meta["title"]),
         ("Student", meta["author"]),
@@ -297,8 +362,12 @@ def _render_abstract(doc: Document, meta: dict[str, str]) -> None:
         r = cells[1].paragraphs[0].add_run(value)
         _run_font(r, 16)
     _centered(doc, "", 16, space_after=12)
-    _centered(doc, "ABSTRACT IN ENGLISH", 24, bold=True, space_after=12)
-    abstract = meta.get("abstract") or "Replace this text with a 200-250 word abstract."
+    heading = "บทคัดย่อ" if thai else "ABSTRACT IN ENGLISH"
+    _centered(doc, heading, 24, bold=True, space_after=12)
+    if thai:
+        abstract = meta.get("abstract_thai") or THAI_ABSTRACT_PLACEHOLDER
+    else:
+        abstract = meta.get("abstract") or ENGLISH_ABSTRACT_PLACEHOLDER
     for chunk in str(abstract).split("\n"):
         chunk = chunk.strip()
         if not chunk:
@@ -329,8 +398,20 @@ def _render_toc(doc: Document) -> None:
     _centered(doc, "TABLE OF CONTENTS", 24, bold=True, space_after=12)
     p = doc.add_paragraph()
     p.paragraph_format.first_line_indent = Inches(0)
-    _add_toc_field(p)
+    _add_toc_field(p, 'TOC \\o "1-3" \\h \\z \\u',
+                   "Right-click and choose 'Update Field' to build the table of contents.")
     doc.add_page_break()
+
+
+def _render_list_page(doc: Document, title: str, seq_name: str) -> None:
+    """LIST OF TABLES / LIST OF FIGURES page driven by a TOC \\c field."""
+    h = doc.add_paragraph(style="Heading 1")
+    r = h.add_run(title)
+    _run_font(r, 24, bold=True)
+    p = doc.add_paragraph()
+    p.paragraph_format.first_line_indent = Inches(0)
+    _add_toc_field(p, f'TOC \\c "{seq_name}" \\h \\z',
+                   "Update fields (F9) to build this list from SEQ captions.")
 
 
 # --------------------------------------------------------------------------
@@ -346,10 +427,6 @@ class _BodyRenderer:
         self.figure_no = 0
         self.equation_no = 0
         self.pending_table: list[list[str]] = []
-
-    # -- numbering helpers -------------------------------------------------
-    def _label(self, kind: str) -> str:
-        return f"{kind.title()} {self.chapter}.{getattr(self, kind + '_no')}"
 
     # -- blocks -------------------------------------------------------------
     def flush_table(self) -> None:
@@ -379,14 +456,12 @@ class _BodyRenderer:
         spacer.paragraph_format.first_line_indent = Inches(0)
 
     def add_table_caption(self, caption: str) -> None:
-        """'Table x.y Caption' line above the table (template format)."""
+        """'Table x.y Caption' line above the table (SEQ field for the number)."""
         self.table_no += 1
         p = self.doc.add_paragraph()
         p.paragraph_format.first_line_indent = Inches(0)
         p.paragraph_format.space_before = Pt(6)
-        r = p.add_run(f"Table {self.chapter}.{self.table_no} ")
-        _run_font(r, 16, bold=True)
-        _add_inline(p, caption)
+        _add_seq_caption(p, "Table", "Table", self.chapter, self.table_no, caption)
 
     def add_image(self, caption: str, path: str) -> None:
         img = Path(path)
@@ -410,9 +485,7 @@ class _BodyRenderer:
         cap = self.doc.add_paragraph()
         cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
         cap.paragraph_format.first_line_indent = Inches(0)
-        r = cap.add_run(f"Figure {self.chapter}.{self.figure_no} ")
-        _run_font(r, 16, bold=True)
-        _add_inline(cap, caption)
+        _add_seq_caption(cap, "Figure", "Figure", self.chapter, self.figure_no, caption)
 
     def add_equation(self, expr: str) -> None:
         self.equation_no += 1
@@ -427,6 +500,11 @@ class _BodyRenderer:
         _run_font(p.add_run(f"\t({self.chapter}.{self.equation_no})"), 16)
 
     def add_chapter(self, title: str) -> None:
+        # Chapters 2+ start a new Word section so the first page of every
+        # chapter can omit the page number (different-first-page is already
+        # configured on the shared body sectPr).
+        if self.chapter >= 1:
+            self.doc.add_section(WD_SECTION_START.NEW_PAGE)
         self.chapter += 1
         self.table_no = self.figure_no = self.equation_no = 0
         label = self.doc.add_paragraph()
@@ -545,16 +623,6 @@ def render_body(doc: Document, body_md: str, base_dir: Path) -> None:
     renderer.flush_table()
 
 
-def _last_caption(lines: list[str], current: str) -> str:
-    """Look at the non-empty line immediately before a table for 'table: caption'."""
-    idx = lines.index(current)
-    for prev in reversed(lines[:idx]):
-        prev = prev.strip()
-        if prev:
-            return prev
-    return ""
-
-
 # --------------------------------------------------------------------------
 # Entry point
 # --------------------------------------------------------------------------
@@ -580,13 +648,21 @@ def convert_thesis_md(
     md_path: str | Path,
     output_docx: str | Path | None = None,
     meta_overrides: dict[str, Any] | None = None,
+    skip_approval_sheet: bool = False,
 ) -> Path:
     """Convert a Markdown thesis manuscript into a KMITL-formatted .docx file.
+
+    Page-number architecture (per the guideline):
+      section 0: cover / title / copyright / approval sheet  -> no numbers
+      section 1: abstracts / acknowledgement / TOC / lists   -> Roman, bottom-center
+      section 2+: one section per chapter                    -> Arabic, top-right,
+                 suppressed on each chapter's first page
 
     Args:
         md_path: source .md file (may include YAML front matter).
         output_docx: destination path; defaults to the .md path with .docx suffix.
         meta_overrides: values that take precedence over front matter fields.
+        skip_approval_sheet: omit the approval-sheet placeholder page.
 
     Returns:
         Path to the generated .docx file.
@@ -612,14 +688,30 @@ def convert_thesis_md(
 
     doc = Document()
     _setup_styles(doc)
-    _setup_sections(doc, meta)
+    _setup_page(doc.sections[0])          # section 0: unnumbered front pages
 
-    _render_cover(doc, meta)          # 1. cover page
-    _render_cover(doc, meta)          # 2. English title page (same content)
-    _render_copyright(doc, meta)      # 3. copyright page
-    _render_abstract(doc, meta)       # 5. English abstract page
-    _render_acknowledgement(doc, meta)
-    _render_toc(doc)                  # 8. table of contents
+    _render_cover(doc, meta)              # 1. cover page
+    _render_cover(doc, meta)              # 2. English title page (same content)
+    _render_copyright(doc, meta)          # 3. copyright page
+    if not skip_approval_sheet:
+        _render_approval_sheet(doc, meta)  # 4. approval sheet placeholder
+
+    # Section 1: Roman-numbered front matter (abstract starts at page I)
+    roman = doc.add_section(WD_SECTION_START.NEW_PAGE)
+    _setup_page(roman)
+    _configure_roman_footer(roman)
+
+    _render_abstract(doc, meta, thai=True)   # 5. Thai abstract
+    _render_abstract(doc, meta, thai=False)  # 6. English abstract
+    _render_acknowledgement(doc, meta)       # 7. acknowledgement
+    _render_toc(doc)                         # 8. table of contents
+    _render_list_page(doc, "LIST OF TABLES", "Table")    # 9. list of tables
+    _render_list_page(doc, "LIST OF FIGURES", "Figure")  # 10. list of figures
+
+    # Section 2: chapters, Arabic numbers top-right (suppressed per chapter start)
+    body = doc.add_section(WD_SECTION_START.NEW_PAGE)
+    _setup_page(body)
+    _configure_body_section(body)
 
     render_body(doc, body_md, md_path.parent)
 

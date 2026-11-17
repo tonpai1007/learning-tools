@@ -145,28 +145,51 @@ def lint_thesis_docx(docx_path: str | Path) -> dict[str, Any]:
                              f"{info['name']} {info['size']}pt bold={info['bold']}"))
 
     # ------------------------------------------------------------------
-    # 5. Page numbering: Roman footer (front matter), Arabic header (body)
+    # 5. Page numbering across sections:
+    #    some section must carry Roman numerals in its footer (front matter)
+    #    and body sections must carry Arabic PAGE fields in their header.
     # ------------------------------------------------------------------
-    if len(doc.sections) >= 2:
-        front, body = doc.sections[0], doc.sections[1]
-        ftr_xml = front.footer.paragraphs[0]._p.xml if front.footer.paragraphs else ""
-        hdr_xml = body.header.paragraphs[0]._p.xml if body.header.paragraphs else ""
-        checks.append(_check("Front matter Roman numerals in footer", "pass"
-                             if _has_page_field(ftr_xml, "ROMAN") else "fail",
-                             "footer PAGE \\* ROMAN field"))
-        checks.append(_check("Body Arabic numerals in header", "pass"
-                             if _has_page_field(hdr_xml) else "fail",
-                             "header PAGE field"))
-    else:
-        checks.append(_check("Two sections (front matter / body)", "warn",
-                             f"only {len(doc.sections)} section found"))
+    roman_found = False
+    arabic_found = False
+    for i, s in enumerate(doc.sections):
+        if s.footer.paragraphs and _has_page_field(s.footer.paragraphs[0]._p.xml, "ROMAN"):
+            roman_found = True
+        if i >= 1 and s.header.paragraphs and _has_page_field(s.header.paragraphs[0]._p.xml):
+            arabic_found = True
+    checks.append(_check("Front matter Roman numerals in footer", "pass" if roman_found else "fail",
+                         "footer PAGE \\* ROMAN field" if roman_found else "no Roman footer field in any section"))
+    checks.append(_check("Body Arabic numerals in header", "pass" if arabic_found else "fail",
+                         "header PAGE field" if arabic_found else "no Arabic header field in any body section"))
 
     # ------------------------------------------------------------------
-    # 6. Chapter structure
+    # 6. Required front-matter pages
+    # ------------------------------------------------------------------
+    all_text = "\n".join(p.text for p in doc.paragraphs)
+    if "บทคัดย่อ" in all_text:
+        checks.append(_check("Thai abstract page", "pass", "found (Thai heading present)"))
+    else:
+        checks.append(_check("Thai abstract page", "warn", "not found"))
+    if "APPROVAL SHEET" in all_text:
+        checks.append(_check("Approval sheet page", "pass", "found"))
+    else:
+        checks.append(_check("Approval sheet page", "warn", "not found"))
+    if "LIST OF TABLES" in all_text and "LIST OF FIGURES" in all_text:
+        checks.append(_check("List of Tables / List of Figures pages", "pass", "found"))
+    else:
+        checks.append(_check("List of Tables / List of Figures pages", "warn", "not found"))
+    if "SEQ" in "\n".join(p._p.xml for p in doc.paragraphs if p.text.strip()):
+        checks.append(_check("SEQ caption fields (auto-numbered lists)", "pass", "found"))
+    else:
+        checks.append(_check("SEQ caption fields (auto-numbered lists)", "warn",
+                             "captions are plain text; List of Tables/Figures will stay empty"))
+
+    # ------------------------------------------------------------------
+    # 7. Chapter structure
     # ------------------------------------------------------------------
     chapter_labels = [p.text.strip() for p in doc.paragraphs
                       if re.fullmatch(r"CHAPTER \d+", p.text.strip())]
-    h1_texts = [p.text.strip() for p in doc.paragraphs if p.style.name == "Heading 1"]
+    h1_texts = [p.text.strip() for p in doc.paragraphs
+                if p.style.name == "Heading 1" and not p.text.strip().startswith("LIST OF")]
     if chapter_labels:
         numbers = [int(c.split()[1]) for c in chapter_labels]
         sequential = numbers == list(range(1, len(numbers) + 1))
@@ -178,7 +201,7 @@ def lint_thesis_docx(docx_path: str | Path) -> dict[str, Any]:
         checks.append(_check("Chapter labels (CHAPTER n)", "warn", "no CHAPTER labels found"))
 
     # ------------------------------------------------------------------
-    # 7. Body run fonts (warn on stray fonts, ignore math/code styles)
+    # 8. Body run fonts (warn on stray fonts, ignore math/code styles)
     # ------------------------------------------------------------------
     allowed = {THESIS_FONT, "Cambria Math", "Consolas", None}
     stray: dict[str, int] = {}
