@@ -1,5 +1,7 @@
 """Learning Tools CLI.
 
+amadeus is the brain the mind the memory this is the hand the tools to make the files
+
   python -m lt ingest                  list/load sources
   python -m lt cards [--add]           generate Anki flashcards (+ add to spaced repetition)
   python -m lt quiz                    generate a practice quiz (HTML)
@@ -20,11 +22,9 @@ from pathlib import Path
 from rich.console import Console
 
 from . import ai, export, generate, ingest, srs, studyguide
-
-from .generators.md import generate_md, detect_intent
-
 from .chunker import chunk_sources
 from .config import cfg
+from .generators.md import generate_md
 
 console = Console()
 logger = logging.getLogger(__name__)
@@ -55,13 +55,7 @@ def _estimate_api_calls(chunks, command: str) -> dict:
         "estimated_tokens": 0,
     }
 
-    if command == "cards":
-        estimates["api_calls"] = n
-        estimates["estimated_tokens"] = sum(len(c.text) // 4 for c in chunks) * 2
-    elif command == "quiz":
-        estimates["api_calls"] = n
-        estimates["estimated_tokens"] = sum(len(c.text) // 4 for c in chunks) * 2
-    elif command == "summarize":
+    if command == "cards" or command == "quiz" or command == "summarize":
         estimates["api_calls"] = n
         estimates["estimated_tokens"] = sum(len(c.text) // 4 for c in chunks) * 2
     elif command == "all":
@@ -90,7 +84,6 @@ def cmd_md(args):
     Args:
         args: Parsed CLI arguments with title, output, content, and dry_run
     """
-    from .generators.md import generate_md
 
     # Handle dry-run mode
     if args.dry_run:
@@ -111,6 +104,76 @@ def cmd_md(args):
     # Generate the Markdown document
     output_path = generate_md(content, args.output)
     console.print(f"[green]Generated:[/green] {output_path}")
+
+def cmd_capabilities(args):
+    """List available system capabilities and commands.
+
+    Args:
+        args: Parsed CLI arguments
+    """
+    console.print("[bold]Learning Tools - System Capabilities[/bold]")
+    console.print("")
+
+    # Core capabilities
+    console.print("[bold]Core Pipeline Capabilities:[/bold]")
+    console.print("  • Ingest and load source materials (PDFs, documents, etc.)")
+    console.print("  • Content chunking and preprocessing")
+    console.print("  • AI-powered generation (LLM completions with retry/caching)")
+
+    console.print("")
+    console.print("[bold]Content Generation:[/bold]")
+    console.print("  • Markdown document generation (cmd: `lt md`)")
+    console.print("  • Anki flashcard generation with spaced repetition (cmd: `lt cards`)")
+    console.print("  • HTML quiz generation (cmd: `lt quiz`)")
+    console.print("  • Study guide HTML generation with concepts, formulas, worked examples (cmd: `lt study-guide`)")
+    console.print("  • PDF document generation (cmd: `lt summarize` + export)")
+    console.print("  • Text content generation (cmd: `lt summarize`)")
+
+    console.print("")
+    console.print("[bold]Export & Format Support:[/bold]")
+    console.print("  • Anki (.apkg) export for flashcard decks (exporters/anki.py)")
+    console.print("  • DOCX document export (exporters/docx.py)")
+    console.print("  • HTML quiz export (exporters/quiz.py)")
+    console.print("  • Summaries export (exporters/summaries.py)")
+    console.print("  • Markdown output format")
+    console.print("  • PDF conversion support (converters/)")
+
+    console.print("")
+    console.print("[bold]Natural Language Understanding:[/bold]")
+    console.print("  • Intent detection from prompts (lt/intents.py)")
+    console.print("  • Command routing based on natural language input")
+    console.print("  • Format detection (markdown vs plain text)")
+
+    console.print("")
+    console.print("[bold]AI & Integration:[/bold]")
+    console.print("  • OpenAI-compatible API client with retry logic (ai.py)")
+    console.print("  • Response caching for cost optimization")
+    console.print("  • AMADEUS integration for Obsidian sync")
+    console.print("  • Second brain vault synchronization")
+
+    console.print("")
+    console.print("[bold]Available CLI Commands:[/bold]")
+    console.print("  lt ingest              - List/load sources")
+    console.print("  lt cards [--add]       - Generate Anki flashcards")
+    console.print("  lt quiz [--num N]      - Generate practice quiz (HTML)")
+    console.print("  lt summarize           - Generate summaries + NotebookLM pack")
+    console.print("  lt tutor [--k N]       - Interactive Socratic tutor")
+    console.print("  lt review              - Spaced-repetition review session")
+    console.print("  lt stats               - Show progress stats")
+    console.print("  lt all                 - Run full pipeline (cards + quiz + summarize)")
+    console.print("  lt sample              - Write sample file into sources/")
+    console.print("  lt study-guide         - Generate HTML study guide")
+    console.print("  lt export-plans        - Export Kilo plans to Obsidian via AMADEUS")
+    console.print("  lt ingest-pdf          - Ingest PDF via AMADEUS")
+    console.print("  lt clean               - Clear cache and temporary files")
+    console.print("  lt md [--title --output --content --dry_run] - Generate Markdown document")
+    console.print("  lt thesis <input.md> [-o output.docx] - Convert Markdown thesis to KMITL-template DOCX")
+    console.print("  lt lint-thesis <file.docx> [--json] - Check thesis DOCX against KMITL template rules")
+    console.print("  lt mcp-server                      - Run the MCP server (tools for agents; see lt/mcp_server.py)")
+    console.print("  lt capabilities        - Show this capabilities list")
+
+    console.print("")
+    console.print("[dim]For detailed help on any command, use: lt <command> --help[/dim]")
 
 
 def cmd_cards(args):
@@ -239,8 +302,8 @@ def cmd_export_plans(args):
 
 def cmd_ingest_pdf(args):
     """Ingest a PDF into the Obsidian second brain via AMADEUS."""
-    import urllib.request
     import urllib.error
+    import urllib.request
     path = Path(args.path)
     if not path.exists():
         console.print(f"[red]File not found: {path}[/red]")
@@ -251,7 +314,7 @@ def cmd_ingest_pdf(args):
         f"--{boundary}\r\n"
         f'Content-Disposition: form-data; name="file"; filename="{path.name}"\r\n'
         f"Content-Type: application/pdf\r\n\r\n"
-    ).encode("utf-8") + path.read_bytes() + f"\r\n--{boundary}--\r\n".encode("utf-8")
+    ).encode() + path.read_bytes() + f"\r\n--{boundary}--\r\n".encode()
     req = urllib.request.Request(
         url,
         data=body,
@@ -273,6 +336,58 @@ def cmd_ingest_pdf(args):
         console.print(f"[red]AMADEUS unreachable: {e}[/red]")
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
+
+
+def cmd_thesis(args):
+    """Convert a Markdown thesis manuscript into a KMITL-template .docx file."""
+    from .converters.thesis_docx import convert_thesis_md
+
+    md_path = Path(args.input)
+    if not md_path.exists():
+        console.print(f"[red]Markdown file not found: {md_path}[/red]")
+        return
+
+    overrides = {
+        key: getattr(args, key)
+        for key in ("title", "author", "year", "degree", "program", "code")
+        if getattr(args, key, None)
+    }
+    try:
+        out = convert_thesis_md(md_path, output_docx=args.output, meta_overrides=overrides)
+        console.print(f"[green]Thesis DOCX generated:[/green] {out}")
+    except Exception as e:
+        console.print(f"[red]Conversion failed: {e}[/red]")
+        logger.exception("Thesis conversion failed")
+
+
+def cmd_lint_thesis(args):
+    """Check a thesis .docx against the KMITL template formatting rules."""
+    from .thesis_lint import format_report, lint_thesis_docx
+
+    path = Path(args.path)
+    if not path.exists():
+        console.print(f"[red]File not found: {path}[/red]")
+        return
+    try:
+        report = lint_thesis_docx(path)
+    except Exception as e:
+        console.print(f"[red]Lint failed: {e}[/red]")
+        logger.exception("Thesis lint failed")
+        return
+    s = report["summary"]
+    color = "green" if s["compliant"] else "red"
+    console.print(f"[{color}]{format_report(report)}[/{color}]")
+    if args.json:
+        import json
+        console.print_json(json.dumps(report, ensure_ascii=False))
+
+
+def cmd_mcp_server(args):
+    """Run the learning-tools MCP server (stdio by default, 'sse' optional)."""
+    from .mcp_server import main as mcp_main
+    import sys
+    sys.argv = [sys.argv[0]] + ([args.transport] if args.transport != "stdio" else [])
+    mcp_main()
 
 
 def cmd_sample(args):
@@ -298,26 +413,7 @@ def cmd_clean(args):
         if output_dir.exists():
             shutil.rmtree(output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
-            console.print(f"[green]Cleared output directory[/green]")
-
-
-def cmd_md(args):
-    """Generate a Markdown document from text content."""
-    from pathlib import Path
-    from .generators.md import generate_md
-    
-    title = getattr(args, "title", "Document")
-    output = getattr(args, "output", None)
-    
-    # Default content if none provided
-    content = getattr(args, "content", None)
-    if not content:
-        content = f"# {title}\n\nGenerated markdown document."
-    
-    output_path = output or Path("output.md")
-    result = generate_md(content, output_path)
-    console.print(f"[green]Markdown generated: {result}[/green]")
-    console.print(f"Title: {title}")
+            console.print("[green]Cleared output directory[/green]")
 
 
 def cmd_all(args):
@@ -341,7 +437,7 @@ def cmd_all(args):
         try:
             print()
             cmd(args)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             console.print(f"[red]step failed: {e}[/red]")
             logger.exception(f"Step {cmd.__name__} failed")
 
@@ -381,8 +477,26 @@ def build_parser():
     sp = sub.add_parser("clean", help="clear cache and temporary files")
     sp.add_argument("--all", action="store_true", help="also clear output directory")
     sp = sub.add_parser("md", help="generate a Markdown document"); sp.add_argument("--title", default="Document", help="title of the markdown document"); sp.add_argument("--output", help="output file path"); sp.add_argument("--content", help="markdown content"); sp.add_argument("--dry_run", action="store_true", help="show what would be generated without writing")
+    
+    sp = sub.add_parser("thesis", help="convert a Markdown thesis to KMITL-template DOCX")
+    sp.add_argument("input", help="path to the .md thesis manuscript")
+    sp.add_argument("-o", "--output", help="output .docx path (default: same name as input)")
+    sp.add_argument("--title", help="override thesis title")
+    sp.add_argument("--author", help="override author name")
+    sp.add_argument("--year", help="override year")
+    sp.add_argument("--degree", help="override degree name")
+    sp.add_argument("--program", help="override program name")
+    sp.add_argument("--code", help="override KMITL document code")
+    sp = sub.add_parser("lint-thesis", help="check a thesis .docx against the KMITL template rules")
+    sp.add_argument("path", help="path to the .docx file")
+    sp.add_argument("--json", action="store_true", help="also print the full JSON report")
+    sp = sub.add_parser("mcp-server", help="run the MCP server exposing lt tools to AI agents")
+    sp.add_argument("transport", nargs="?", default="stdio", choices=["stdio", "sse"],
+                    help="MCP transport (default: stdio)")
+    sp = sub.add_parser("capabilities", help="list available system capabilities and commands")
     sp = sub.add_parser("all", help="run cards + quiz + summarize"); add_common(sp)
     return p
+
 
 
 def main(argv=None):
@@ -399,12 +513,16 @@ def main(argv=None):
             "ingest": cmd_ingest, "cards": cmd_cards, "quiz": cmd_quiz, "summarize": cmd_summarize,
             "tutor": cmd_tutor, "review": cmd_review, "stats": cmd_stats, "sample": cmd_sample,
             "md": cmd_md,
+            "thesis": cmd_thesis,
+            "lint-thesis": cmd_lint_thesis,
+            "mcp-server": cmd_mcp_server,
             "study-guide": cmd_study_guide, "all": cmd_all, "clean": cmd_clean,
             "export-plans": cmd_export_plans, "ingest-pdf": cmd_ingest_pdf,
+            "capabilities": cmd_capabilities,
         }[args.command](args)
     except KeyboardInterrupt:
         console.print("\n[yellow]stopped.[/yellow]")
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
         logger.exception("Unhandled error")
         if str(e).lower().find("api") != -1 or str(e).lower().find("auth") != -1:

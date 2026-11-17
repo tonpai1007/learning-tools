@@ -9,3 +9,5 @@ flask>=3.0.0
 langgraph>=0.2.0
 docxtpl>=0.16.0
 cairosvg>=2.7.0
+httpx>=0.24.0
+mcp>=1.0.0
