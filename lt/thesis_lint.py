@@ -44,15 +44,23 @@ def _style_font_info(doc: Document, style_name: str) -> dict[str, Any]:
         style = doc.styles[style_name]
     except KeyError:
         return {"missing": True}
-    font = style.font
-    rpr = style.element.find(qn("w:rPr"))
-    cs = None
-    if rpr is not None:
-        rfonts = rpr.find(qn("w:rFonts"))
-        if rfonts is not None:
-            cs = rfonts.get(qn("w:cs"))
-    size = font.size.pt if font.size else None
-    return {"name": font.name, "size": size, "bold": font.bold, "cs": cs}
+    # Resolve through the basedOn chain: Word drops properties that equal the
+    # base style's when it saves (e.g. Heading 3 16pt == Normal 16pt).
+    name = size = bold = cs = None
+    s = style
+    while s is not None:
+        font = s.font
+        name = name if name is not None else font.name
+        if size is None and font.size:
+            size = font.size.pt
+        bold = bold if bold is not None else font.bold
+        if cs is None:
+            rpr = s.element.find(qn("w:rPr"))
+            rfonts = rpr.find(qn("w:rFonts")) if rpr is not None else None
+            if rfonts is not None:
+                cs = rfonts.get(qn("w:cs"))
+        s = s.base_style
+    return {"name": name, "size": size, "bold": bold, "cs": cs}
 
 
 def _has_page_field(paragraph_xml: str, fmt: str | None = None) -> bool:
@@ -164,16 +172,18 @@ def lint_thesis_docx(docx_path: str | Path) -> dict[str, Any]:
     # ------------------------------------------------------------------
     # 6. Required front-matter pages
     # ------------------------------------------------------------------
-    all_text = "\n".join(p.text for p in doc.paragraphs)
+    # Strip U+200B Thai word-break hints inserted by the converter.
+    all_text = "\n".join(p.text for p in doc.paragraphs).replace("​", "")
     if "บทคัดย่อ" in all_text:
         checks.append(_check("Thai abstract page", "pass", "found (Thai heading present)"))
     else:
         checks.append(_check("Thai abstract page", "warn", "not found"))
-    if "APPROVAL SHEET" in all_text:
+    if "APPROVAL SHEET" in all_text or "ใบรับรองวิทยานิพนธ์" in all_text:
         checks.append(_check("Approval sheet page", "pass", "found"))
     else:
         checks.append(_check("Approval sheet page", "warn", "not found"))
-    if "LIST OF TABLES" in all_text and "LIST OF FIGURES" in all_text:
+    if (("LIST OF TABLES" in all_text and "LIST OF FIGURES" in all_text)
+            or ("สารบัญตาราง" in all_text and "สารบัญรูป" in all_text)):
         checks.append(_check("List of Tables / List of Figures pages", "pass", "found"))
     else:
         checks.append(_check("List of Tables / List of Figures pages", "warn", "not found"))
@@ -186,16 +196,19 @@ def lint_thesis_docx(docx_path: str | Path) -> dict[str, Any]:
     # ------------------------------------------------------------------
     # 7. Chapter structure
     # ------------------------------------------------------------------
-    chapter_labels = [p.text.strip() for p in doc.paragraphs
-                      if re.fullmatch(r"CHAPTER \d+", p.text.strip())]
-    h1_texts = [p.text.strip() for p in doc.paragraphs
-                if p.style.name == "Heading 1" and not p.text.strip().startswith("LIST OF")]
-    if chapter_labels:
-        numbers = [int(c.split()[1]) for c in chapter_labels]
+    # English "CHAPTER n" or Thai "บทที่ n"; each label must be followed by a
+    # Heading 1 title. Unnumbered chapters (bibliography) have no label.
+    label_re = re.compile(r"(?:CHAPTER|บทที่)\s+(\d+)")
+    paras = doc.paragraphs
+    texts = [p.text.replace("​", "").strip() for p in paras]
+    label_idx = [i for i, t in enumerate(texts) if label_re.fullmatch(t)]
+    if label_idx:
+        numbers = [int(label_re.fullmatch(texts[i]).group(1)) for i in label_idx]
         sequential = numbers == list(range(1, len(numbers) + 1))
-        paired = len(chapter_labels) == len(h1_texts)
+        paired = all(i + 1 < len(paras) and paras[i + 1].style.name == "Heading 1"
+                     for i in label_idx)
         status = "pass" if sequential and paired else "warn"
-        detail = f"{len(chapter_labels)} chapters; sequential={sequential}; paired_with_h1={paired}"
+        detail = f"{len(label_idx)} chapters; sequential={sequential}; paired_with_h1={paired}"
         checks.append(_check("Chapter labels (CHAPTER n)", status, detail))
     else:
         checks.append(_check("Chapter labels (CHAPTER n)", "warn", "no CHAPTER labels found"))
