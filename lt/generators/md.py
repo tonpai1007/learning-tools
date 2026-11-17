@@ -5,10 +5,10 @@ with the OfficeController to handle "markdown" intent from natural language prom
 """
 
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
-def generate_md(content: str, output_path: Optional[str | Path] = None) -> Path:
+def generate_md(content: str, output_path: str | Path | None = None) -> Path:
     """Generate a Markdown document from text content.
     
     Args:

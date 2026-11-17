@@ -17,10 +17,10 @@ import math
 import os
 import re
 import sys
-import urllib.request
 import urllib.error
+import urllib.request
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ class MDIEPhysicsClient:
     Client connecting learning-tools to the MDIE computational engineering physics solver.
     """
 
-    def __init__(self, base_url: str = DEFAULT_MDIE_URL, mdie_dir: Optional[Path] = None):
+    def __init__(self, base_url: str = DEFAULT_MDIE_URL, mdie_dir: Path | None = None):
         self.base_url = base_url.rstrip("/")
         self.mdie_dir = mdie_dir or MDIE_DIR
         ensure_mdie_imported()
@@ -56,7 +56,7 @@ class MDIEPhysicsClient:
         except Exception:
             return False
 
-    def solve_3d_fea(self, preset: str = "chair") -> Dict[str, Any]:
+    def solve_3d_fea(self, preset: str = "chair") -> dict[str, Any]:
         """
         Solve a 3D FEA direct stiffness frame model (presets: 'chair', 'tower', 'girder').
         """
@@ -71,9 +71,9 @@ class MDIEPhysicsClient:
 
         # 2. Direct library execution
         from mdie.physics.fea_3d import (
+            build_cantilever_space_frame_model,
             build_chair_3d_fea_model,
             build_space_truss_tower_model,
-            build_cantilever_space_frame_model
         )
         if preset == "chair":
             from mdie.core.frame_model import FrameDesignModel
@@ -96,7 +96,7 @@ class MDIEPhysicsClient:
         E_gpa: float = 205.0,
         K: float = 1.0,
         yield_mpa: float = 370.0
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Perform deterministic Euler-Johnson column buckling calculation.
         """
@@ -141,7 +141,7 @@ class MDIEPhysicsClient:
             "passed": bool(sf_buckling >= 1.5 and sf_yield >= 1.5)
         }
 
-    def query_physics_hook(self, question: str) -> Optional[str]:
+    def query_physics_hook(self, question: str) -> str | None:
         """
         Analyze a query to see if it requires verified physics solving.
         If matched, executes deterministic calculations and formats a Markdown context block.

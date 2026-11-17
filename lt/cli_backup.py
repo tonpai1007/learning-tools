@@ -20,9 +20,9 @@ from pathlib import Path
 from rich.console import Console
 
 from . import ai, export, generate, ingest, srs, studyguide
-from .controller import OfficeController, get_controller
 from .chunker import chunk_sources
 from .config import cfg
+from .controller import get_controller
 
 console = Console()
 logger = logging.getLogger(__name__)
@@ -53,13 +53,7 @@ def _estimate_api_calls(chunks, command: str) -> dict:
         "estimated_tokens": 0,
     }
 
-    if command == "cards":
-        estimates["api_calls"] = n
-        estimates["estimated_tokens"] = sum(len(c.text) // 4 for c in chunks) * 2
-    elif command == "quiz":
-        estimates["api_calls"] = n
-        estimates["estimated_tokens"] = sum(len(c.text) // 4 for c in chunks) * 2
-    elif command == "summarize":
+    if command == "cards" or command == "quiz" or command == "summarize":
         estimates["api_calls"] = n
         estimates["estimated_tokens"] = sum(len(c.text) // 4 for c in chunks) * 2
     elif command == "all":
@@ -208,8 +202,8 @@ def cmd_export_plans(args):
 
 def cmd_ingest_pdf(args):
     """Ingest a PDF into the Obsidian second brain via AMADEUS."""
-    import urllib.request
     import urllib.error
+    import urllib.request
     path = Path(args.path)
     if not path.exists():
         console.print(f"[red]File not found: {path}[/red]")
@@ -220,7 +214,7 @@ def cmd_ingest_pdf(args):
         f"--{boundary}\r\n"
         f'Content-Disposition: form-data; name="file"; filename="{path.name}"\r\n'
         f"Content-Type: application/pdf\r\n\r\n"
-    ).encode("utf-8") + path.read_bytes() + f"\r\n--{boundary}--\r\n".encode("utf-8")
+    ).encode() + path.read_bytes() + f"\r\n--{boundary}--\r\n".encode()
     req = urllib.request.Request(
         url,
         data=body,
@@ -267,13 +261,12 @@ def cmd_clean(args):
         if output_dir.exists():
             shutil.rmtree(output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
-            console.print(f"[green]Cleared output directory[/green]")
+            console.print("[green]Cleared output directory[/green]")
 
 
 
 def cmd_ai_assistant(args):
     """Run the AI Office Assistant CLI loop."""
-    from .controller import get_controller
     controller = get_controller()
     controller.run_cli_loop()
 
@@ -307,7 +300,7 @@ def cmd_all(args):
         try:
             print()
             cmd(args)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             console.print(f"[red]step failed: {e}[/red]")
             logger.exception(f"Step {cmd.__name__} failed")
 
@@ -373,7 +366,7 @@ def main(argv=None):
         }[args.command](args)
     except KeyboardInterrupt:
         console.print("\n[yellow]stopped.[/yellow]")
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
         logger.exception("Unhandled error")
         if str(e).lower().find("api") != -1 or str(e).lower().find("auth") != -1:

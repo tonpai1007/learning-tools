@@ -1,13 +1,15 @@
 """Intent Detector for the AI Office Assistant.
 
+amadeus is the brain the mind the memory this is the hand the tools to make the files
+
 Detects user intent from natural language prompts.
 Returns standardized intent objects for the Controller to process.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
-INTENT_KEYWORDS: Dict[str, list[str]] = {
+INTENT_KEYWORDS: dict[str, list[str]] = {
     "docx": ["docx", "word", "document", "write", "create doc", "GPT doc", "GPT document", "gpt"],
     "pdf": ["pdf", "portable document", "export pdf", "create pdf", "GPT pdf", "gpt"],
     "markdown": ["markdown", "md", "mark", "readme", "write md"],
@@ -21,7 +23,7 @@ INTENT_KEYWORDS: Dict[str, list[str]] = {
 }
 
 # P1: Enhanced intent patterns with weights and descriptions
-INTENT_PATTERNS: Dict[str, Dict[str, Any]] = {
+INTENT_PATTERNS: dict[str, dict[str, Any]] = {
     "docx": {
         "keywords": ["docx", "word", "document", "write", "create doc", "word doc"],
         "weight": 1.0,
@@ -80,13 +82,13 @@ INTENT_PATTERNS: Dict[str, Dict[str, Any]] = {
 }
 
 # P1: Style keywords for detection
-STYLE_KEYWORDS: Set[str] = {
+STYLE_KEYWORDS: set[str] = {
     "formal", "informal", "professional", "casual", "academic",
     "friendly", "concise", "detailed", "brief"
 }
 
 # P1: Topic-related trigger words
-TOPIC_TRIGGERS: Set[str] = {
+TOPIC_TRIGGERS: set[str] = {
     "topic", "about", "regarding", "concerning"
 }
 
@@ -142,7 +144,7 @@ def _build_details(best_intent: str, prompt_lower: str, prompt_words: list, prom
     return details
 
 
-def detect_intent(prompt: str) -> Dict[str, Any]:
+def detect_intent(prompt: str) -> dict[str, Any]:
     """Detect user intent from a natural language prompt.
 
     P1 Enhancements:
@@ -211,7 +213,7 @@ def detect_intent(prompt: str) -> Dict[str, Any]:
     }
 
 
-def _detect_preference_intent(prompt: str) -> Dict[str, Any]:
+def _detect_preference_intent(prompt: str) -> dict[str, Any]:
     """Detect intent when user states a preference.
 
     Args:
@@ -268,7 +270,7 @@ def _detect_preference_intent(prompt: str) -> Dict[str, Any]:
 
 
 def _calculate_intent_scores(
-    INTENT_PATTERNS: Dict[str, Dict[str, Any]],
+    INTENT_PATTERNS: dict[str, dict[str, Any]],
     prompt_lower: str,
     prompt_words: list,
     prompt_len: int,
@@ -339,7 +341,7 @@ def _calculate_intent_scores(
     return scores
 
 
-def format_intent(intent_dict: Dict[str, Any]) -> str:
+def format_intent(intent_dict: dict[str, Any]) -> str:
     """Format an intent dictionary into a human-readable string.
 
     Args:

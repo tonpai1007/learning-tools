@@ -7,10 +7,8 @@ Handles three layers of memory:
 """
 
 import json
-import os
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # Path for persistent memory
 MEMORY_DIR = Path.home() / ".learning-tools"
@@ -33,8 +31,8 @@ class ConversationMemory:
             max_recent: Maximum number of user/assistant exchange pairs to retain
         """
         self.max_recent = max_recent
-        self.recent: List[Tuple[str, str]] = []  # List of (role, content) tuples
-        self.persistent: Dict[str, Any] = {}
+        self.recent: list[tuple[str, str]] = []  # List of (role, content) tuples
+        self.persistent: dict[str, Any] = {}
 
         # Load persistent memory from file if it exists
         self._load_persistent()
@@ -53,7 +51,7 @@ class ConversationMemory:
                     (entry.get("role", "user"), entry.get("content", ""))
                     for entry in recent
                 ]
-            except (json.JSONDecodeError, KeyError, IOError):
+            except (OSError, json.JSONDecodeError, KeyError):
                 # Start fresh if file is corrupted
                 self.persistent = {}
                 self.recent = []
@@ -71,7 +69,7 @@ class ConversationMemory:
         try:
             with open(MEMORY_FILE, "w", encoding="utf8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
-        except IOError:
+        except OSError:
             logger.warning(f"Could not save memory to {MEMORY_FILE}")
 
     def add(self, role: str, content: str) -> None:
@@ -91,7 +89,7 @@ class ConversationMemory:
         # Save after adding
         self._save_persistent()
 
-    def get_recent(self, n: Optional[int] = None) -> List[Tuple[str, str]]:
+    def get_recent(self, n: int | None = None) -> list[tuple[str, str]]:
         """Get the recent conversation history.
 
         Args:
@@ -149,7 +147,7 @@ class ConversationMemory:
 
 # Global memory instance (can be imported and used directly)
 # This allows other modules to access memory without creating new instances
-_memory_instance: Optional[ConversationMemory] = None
+_memory_instance: ConversationMemory | None = None
 
 
 def get_memory() -> ConversationMemory:

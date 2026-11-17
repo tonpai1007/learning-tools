@@ -5,18 +5,17 @@ into beautifully formatted, printable Microsoft Word (.docx) documents.
 Supports optional AI-assisted Executive Summaries and Engineering Peer Reviews.
 """
 
-import os
 import re
 from pathlib import Path
-from typing import Optional, List, Dict, Any, Union
+from typing import Any
 
-from bs4 import BeautifulSoup, NavigableString, Tag
 import docx
-from docx.shared import Inches, Pt, RGBColor
+from bs4 import BeautifulSoup, NavigableString, Tag
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
-from docx.oxml import parse_xml, OxmlElement
-from docx.oxml.ns import nsdecls, qn
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
+from docx.shared import Inches, Pt, RGBColor
 
 try:
     from .ai import complete as lt_complete
@@ -30,6 +29,88 @@ try:
     from mdie.ai.llm_router import LLMRouter
 except ImportError:
     LLMRouter = None
+
+
+def _docx_picture_width(width: float | int | Any) -> Any:
+    """Convert a px-like width value to python-docx dimensions."""
+    from docx.shared import Inches
+
+    if width is None:
+        return None
+    if isinstance(width, (int, float)):
+        return Inches(float(width) / 96.0)
+    return width
+
+
+def extract_docx_context(docx_path: str | Path) -> dict[str, Any]:
+    """Extract human-readable content from a Word document including paragraphs, tables and images."""
+    path = Path(docx_path)
+    document = docx.Document(str(path))
+
+    paragraphs: list[str] = []
+    for para in document.paragraphs:
+        text = para.text.strip()
+        if text:
+            paragraphs.append(text)
+
+    tables: list[list[list[str]]] = []
+    for table in document.tables:
+        rows = [[cell.text.strip() for cell in row.cells] for row in table.rows]
+        if rows:
+            tables.append(rows)
+
+    images: list[dict[str, Any]] = []
+    for idx, shape in enumerate(document.inline_shapes, start=1):
+        images.append(
+            {
+                "index": idx,
+                "shape_type": getattr(shape, "shape_type", None),
+                "caption": None,
+                "width": getattr(shape, "width", None),
+                "height": getattr(shape, "height", None),
+            }
+        )
+
+    return {
+        "path": str(path),
+        "full_text": "\n".join(paragraphs),
+        "paragraphs": paragraphs,
+        "tables": tables,
+        "images": images,
+        "heading_count": sum(
+            1
+            for para in document.paragraphs
+            if (para.style.name if para.style else "").lower().startswith("heading")
+        ),
+    }
+
+
+def insert_docx_picture(
+    docx_path: str | Path,
+    image_path: str | Path,
+    caption: str | None = None,
+    width: float | int | Any = 180,
+) -> Path:
+    """Insert an image into a DOCX file and optionally append a caption paragraph."""
+    source = Path(docx_path)
+    image = Path(image_path)
+
+    if not source.exists():
+        raise FileNotFoundError(f"Word document not found: {source}")
+    if not image.exists():
+        raise FileNotFoundError(f"Image not found: {image}")
+
+    document = docx.Document(str(source))
+    paragraph = document.add_paragraph()
+    run = paragraph.add_run()
+    run.add_picture(str(image), width=_docx_picture_width(width) or Inches(1.5))
+
+    if caption:
+        document.add_paragraph(caption, style="Caption")
+
+    output_path = source.with_name(f"{source.stem}_with_picture{source.suffix}")
+    document.save(str(output_path))
+    return output_path
 
 
 class HTMLToDocxConverter:
@@ -47,10 +128,10 @@ class HTMLToDocxConverter:
     @classmethod
     def convert(
         cls,
-        html_path: Union[str, Path],
-        output_docx_path: Optional[Union[str, Path]] = None,
+        html_path: str | Path,
+        output_docx_path: str | Path | None = None,
         enable_ai: bool = False,
-        custom_ai_instructions: Optional[str] = None
+        custom_ai_instructions: str | None = None
     ) -> Path:
         """
         Converts an HTML report to a styled DOCX file.
@@ -81,7 +162,7 @@ class HTMLToDocxConverter:
         doc_title = cls._extract_title(soup)
 
         # 3. Check for Cover Sheet (Academic Dossier)
-        cover_sheet = soup.find("div", class_=re.compile(r"cover-sheet", re.I))
+        cover_sheet = soup.find("div", class_=re.compile(r"cover-sheet", re.IGNORECASE))
         if cover_sheet:
             cls._render_cover_page(doc, cover_sheet, doc_title)
             doc.add_page_break()
@@ -258,7 +339,7 @@ class HTMLToDocxConverter:
         doc: docx.Document,
         soup: BeautifulSoup,
         html_path: Path,
-        custom_instructions: Optional[str] = None
+        custom_instructions: str | None = None
     ):
         """
         Executes cascading LLMRouter call to generate an AI Executive Summary & Engineering Review

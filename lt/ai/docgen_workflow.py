@@ -6,14 +6,12 @@ All numerical values come from deterministic data sources; agents only author na
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, TypedDict, Optional
+from typing import Any, TypedDict
 
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END, StateGraph
 
 from lt.reporting.diagrams import generate_all_diagrams
-
 
 # =============================================================================
 # State Definition
@@ -354,9 +352,8 @@ def editor_node(state: DocGenState) -> DocGenState:
 def renderer_node(state: DocGenState) -> DocGenState:
     """Renderer Agent: Fill docxtpl template with data and narrative."""
     try:
-        from docxtpl import DocxTemplate
-        from docxtpl import InlineImage
         from docx.shared import Inches
+        from docxtpl import DocxTemplate, InlineImage
     except ImportError:
         state["errors"].append("docxtpl not installed. Install with: pip install docxtpl")
         return state
@@ -491,4 +488,4 @@ def generate_docx_report(data: dict[str, Any]) -> tuple[Path | None, list[str]]:
     return final_state["output_path"], final_state["errors"]
 
 
-__all__ = ["generate_docx_report", "build_docgen_workflow", "DocGenState"]
+__all__ = ["DocGenState", "build_docgen_workflow", "generate_docx_report"]

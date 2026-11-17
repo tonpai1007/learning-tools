@@ -1,13 +1,18 @@
 """OfficeController for the AI Office Assistant.
 
+amadeus is the brain the mind the memory this is the hand the tools to make the files
+
 Orchestrates the flow: Input -> Intent Detection -> Memory Update -> Generator Execution -> Output
 """
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
-from .memory import ConversationMemory, get_memory, reset_memory
+import httpx
+
+from .config import cfg
 from .intents import detect_intent, format_intent
+from .memory import get_memory, reset_memory
 
 
 class OfficeController:
@@ -70,7 +75,7 @@ class OfficeController:
                 logger = logging.getLogger(__name__)
                 logger.error(f"Generator error for intent {intent_key}: {e}")
                 response = {
-                    "error": f"Generator error: {str(e)}",
+                    "error": f"Generator error: {e!s}",
                     "intent": intent_key,
                 }
         else:
@@ -82,6 +87,15 @@ class OfficeController:
 
         # Step 4: Add assistant response to memory
         self.memory.add("assistant", str(response) if response else "")
+
+        # Step 5: Sync to AMADEUS if generation was successful
+        if response and "Error" not in str(response.get("response", "")):
+            try:
+                sync_to_amadeus(response, prompt)
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"AMADEUS sync failed: {e}")
 
         return {
             "intent": intent_dict,
@@ -136,7 +150,7 @@ class OfficeController:
 
 
 # Global controller instance
-_controller_instance: Optional[OfficeController] = None
+_controller_instance: OfficeController | None = None
 
 
 def get_controller() -> OfficeController:
@@ -156,3 +170,53 @@ def reset_controller() -> None:
     global _controller_instance
     _controller_instance = None
     reset_memory()
+
+
+def sync_to_amadeus(generation_result: dict[str, Any], prompt: str) -> None:
+    """Sync a generated file to AMADEUS second brain.
+
+    Posts the generation result to the AMADEUS MCP sync endpoint,
+    allowing the file to be picked up by Obsidian/second-brain workflow.
+
+    Args:
+        generation_result: Dictionary from controller.process_input() or generator
+        prompt: The original user prompt that triggered generation
+    """
+    amadeus_url = cfg.amadeus_url()
+    if not amadeus_url:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.debug("AMADEUS URL not configured, skipping sync")
+        return
+
+    # Extract file path from generation result
+    file_path = generation_result.get("generated_path", "")
+    intent = generation_result.get("intent", "docx")
+
+    sync_data = {
+        "source": "learning-tools",
+        "type": intent,
+        "file_path": file_path,
+        "prompt": prompt,
+        "status": "completed",
+    }
+
+    try:
+        with httpx.Client(timeout=30.0) as client:
+            response = client.post(amadeus_url, json=sync_data)
+            response.raise_for_status()
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.info(f"Successfully synced to AMADEUS: {intent} doc generated")
+    except httpx.RequestError as e:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"AMADEUS sync request failed: {e}")
+    except httpx.HTTPStatusError as e:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"AMADEUS sync returned error: {e.response.status_code}")

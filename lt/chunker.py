@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from .config import cfg
 
-SPLIT_RE = re.compile(r"(?m)^\s*#{1,3}\s.*$|^\s*[-*]\s|^---\s*\[page", re.M)
+SPLIT_RE = re.compile(r"(?m)^\s*#{1,3}\s.*$|^\s*[-*]\s|^---\s*\[page", re.MULTILINE)
 
 
 @dataclass

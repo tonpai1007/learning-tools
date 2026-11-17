@@ -6,7 +6,6 @@ Generates SVG diagrams and converts to PNG for embedding in Word documents.
 from __future__ import annotations
 
 import html
-import os
 from pathlib import Path
 from typing import Any
 
@@ -204,8 +203,8 @@ def generate_fbd_diagram(model: Any, data: dict[str, Any], output_dir: Path) -> 
 
 
 __all__ = [
-    "generate_svg_diagram",
-    "svg_to_png", 
     "generate_all_diagrams",
     "generate_fbd_diagram",
+    "generate_svg_diagram",
+    "svg_to_png",
 ]

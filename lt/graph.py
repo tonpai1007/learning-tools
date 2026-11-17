@@ -48,8 +48,7 @@ class CodeGraph:
 
         rel_path = filepath.relative_to(root)
         module_name = str(rel_path).replace("\\", "/").replace("/", ".").removesuffix(".py")
-        if module_name.endswith(".__init__"):
-            module_name = module_name[:-9]
+        module_name = module_name.removesuffix(".__init__")
 
         file_id = f"file_{rel_path.stem}"
         self._add_node(file_id, str(rel_path), "module", path=str(rel_path))

@@ -1,6 +1,7 @@
 """Export summaries and study guides to Markdown."""
 import logging
 from pathlib import Path
+
 from ..generate import Summary
 
 logger = logging.getLogger(__name__)

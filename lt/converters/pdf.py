@@ -1,12 +1,10 @@
 """PDF extraction tools."""
 from __future__ import annotations
 
-import os
 from pathlib import Path
-from typing import Dict, Any, List, Optional
 
 
-def extract_pdf_to_text(pdf_path: str | Path, output_txt_path: Optional[str | Path] = None) -> str:
+def extract_pdf_to_text(pdf_path: str | Path, output_txt_path: str | Path | None = None) -> str:
     """Extract full text and metadata from a PDF file."""
     pdf_path = Path(pdf_path)
     if not pdf_path.exists():
@@ -14,7 +12,7 @@ def extract_pdf_to_text(pdf_path: str | Path, output_txt_path: Optional[str | Pa
 
     import pdfplumber
 
-    lines: List[str] = [
+    lines: list[str] = [
         f"FILE: {pdf_path}",
     ]
     with pdfplumber.open(pdf_path) as pdf:

@@ -32,7 +32,7 @@ class Source:
                 return self._read_html()
             if self.extension in TEXT:
                 return self.path.read_text(encoding="utf-8", errors="ignore")
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             raise RuntimeError(f"Failed to read {self.path}: {e}") from e
         raise ValueError(f"Unsupported file type: {self.extension}")
 
@@ -71,8 +71,8 @@ class Source:
 
     def _read_html(self) -> str:
         text = self.path.read_text(encoding="utf-8", errors="ignore")
-        text = re.sub(r"<script.*?</script>", " ", text, flags=re.S | re.I)
-        text = re.sub(r"<style.*?</style>", " ", text, flags=re.S | re.I)
+        text = re.sub(r"<script.*?</script>", " ", text, flags=re.DOTALL | re.IGNORECASE)
+        text = re.sub(r"<style.*?</style>", " ", text, flags=re.DOTALL | re.IGNORECASE)
         text = re.sub(r"<[^>]+>", " ", text)
         return re.sub(r"\s+", " ", text).strip()
 

@@ -1,11 +1,11 @@
 """Flask web interface for learning tools."""
 from __future__ import annotations
 
+import json
 import logging
 from datetime import datetime
 from pathlib import Path
 
-import json
 from flask import Flask, jsonify, render_template, request, send_file
 
 from .analytics import analytics
@@ -212,8 +212,8 @@ def api_convert_docx():
 @app.route("/api/mdie/status")
 def api_mdie_status():
     """Check connectivity to MDIE computational design engine (port 8000)."""
-    import urllib.request
     import urllib.error
+    import urllib.request
     mdie_url = "http://127.0.0.1:8000"
     is_online = False
     details = {}
@@ -262,8 +262,8 @@ def api_mdie_ingest():
         pack_file.write_text(json.dumps(pack_data, indent=2), encoding="utf-8")
 
         if flashcards:
-            from .generate import Flashcard
             from .export import write_anki
+            from .generate import Flashcard
             cards = [
                 Flashcard(
                     question=c.get("question", c.get("front", "")),
@@ -330,11 +330,10 @@ def api_consolidate():
     - Optionally generates Word (.docx) document if HTML
     """
     try:
-        from .ingest import Source
+        from . import export, generate
         from .chunker import chunk_sources
-        from . import generate
-        from . import export
         from .docx_converter import HTMLToDocxConverter
+        from .ingest import Source
 
         data = request.get_json(silent=True) or {}
         report_path_str = data.get("report_path")

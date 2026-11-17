@@ -1,5 +1,7 @@
 """OpenAI-compatible API client with retry logic and response caching.
 
+amadeus is the brain the mind the memory this is the hand the tools to make the files
+
 Swap providers by changing .env / config.yaml.
 """
 import hashlib

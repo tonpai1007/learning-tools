@@ -1,3 +1,0 @@
-# Already formatted
-
-Some content

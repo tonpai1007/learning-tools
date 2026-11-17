@@ -1,5 +1,6 @@
 """Export study materials to DOCX."""
 from pathlib import Path
+
 from ..converters.docx import HTMLToDocxConverter
 
 

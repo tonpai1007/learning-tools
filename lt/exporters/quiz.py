@@ -1,6 +1,7 @@
 """Export quiz questions to standalone HTML."""
 import logging
 from pathlib import Path
+
 from ..generate import QuizQuestion
 
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ def write_quiz(questions: list[QuizQuestion], path: Path) -> None:
         for j, opt in enumerate(q.options):
             html_parts.append(f"<div class='opt'>{chr(65+j)}. {opt}</div>")
         html_parts.append(
-            f"<button onclick=\"this.nextElementSibling.style.display='block'\">Show Answer</button>"
+            "<button onclick=\"this.nextElementSibling.style.display='block'\">Show Answer</button>"
         )
         html_parts.append(
             f"<div class='exp'><strong>Answer: {chr(65+q.answer_index)}</strong><br>{q.explanation}</div>"

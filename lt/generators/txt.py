@@ -5,10 +5,10 @@ with the OfficeController to handle "txt" intent from natural language prompts.
 """
 
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
-def generate_txt(content: str, output_path: Optional[str | Path] = None) -> Path:
+def generate_txt(content: str, output_path: str | Path | None = None) -> Path:
     """Generate a TXT document from plain text content.
     
     Args:
